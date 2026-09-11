@@ -8,6 +8,7 @@ import ChatInput from '../../components/ChatInput';
 import TariffCalculator from '../../components/TariffCalculator';
 import PincodeLookup from '../../components/PincodeLookup';
 import FinancialCalculator from '../../components/FinancialCalculator';
+import ThemeToggle from '../../components/ThemeToggle';
 import { supabase } from '../../lib/supabase';
 import {
   fetchConversations,
@@ -227,6 +228,7 @@ export default function ChatPage() {
             </div>
 
             <div className="header-right">
+              <ThemeToggle />
               <select
                 className="lang-select"
                 value={language}

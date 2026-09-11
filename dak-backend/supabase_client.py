@@ -25,6 +25,18 @@ def get_supabase_admin():
         _supabase_admin_client = create_client(SUPABASE_URL, key)
     return _supabase_admin_client
 
+def get_supabase_client(token: str = None):
+    """
+    Returns a Supabase client. If a token is provided and we do not have a service
+    role key (which bypasses RLS), authenticate the client as the user so that
+    Row Level Security (RLS) policies pass.
+    """
+    if token and not SUPABASE_SERVICE_KEY:
+        client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        client.postgrest.headers["Authorization"] = f"Bearer {token}"
+        return client
+    return get_supabase_admin()
+
 def get_user_from_token(token: str):
     try:
         supabase = get_supabase()
@@ -36,10 +48,10 @@ def get_user_from_token(token: str):
         print(f"[-] Token verification error: {e}")
         return None
 
-def get_user_conversations(user_id: str):
+def get_user_conversations(user_id: str, token: str = None):
     try:
-        admin = get_supabase_admin()
-        res = admin.table("conversations")\
+        client = get_supabase_client(token)
+        res = client.table("conversations")\
             .select("id, title, created_at, updated_at")\
             .eq("user_id", user_id)\
             .order("updated_at", desc=True)\
@@ -49,10 +61,10 @@ def get_user_conversations(user_id: str):
         print(f"[-] Error fetching conversations: {e}")
         return []
 
-def create_user_conversation(user_id: str, title: str = "New Chat") -> str:
+def create_user_conversation(user_id: str, title: str = "New Chat", token: str = None) -> str:
     try:
-        admin = get_supabase_admin()
-        res = admin.table("conversations").insert({
+        client = get_supabase_client(token)
+        res = client.table("conversations").insert({
             "user_id": user_id,
             "title": title
         }).execute()
@@ -63,19 +75,19 @@ def create_user_conversation(user_id: str, title: str = "New Chat") -> str:
         print(f"[-] Error creating conversation: {e}")
         return None
 
-def update_conversation_title(conversation_id: str, title: str):
+def update_conversation_title(conversation_id: str, title: str, token: str = None):
     try:
-        admin = get_supabase_admin()
-        admin.table("conversations").update({
+        client = get_supabase_client(token)
+        client.table("conversations").update({
             "title": title[:60]
         }).eq("id", conversation_id).execute()
     except Exception as e:
         print(f"[-] Error updating conversation title: {e}")
 
-def get_conversation_messages(conversation_id: str):
+def get_conversation_messages(conversation_id: str, token: str = None):
     try:
-        admin = get_supabase_admin()
-        res = admin.table("messages")\
+        client = get_supabase_client(token)
+        res = client.table("messages")\
             .select("id, role, content, created_at")\
             .eq("conversation_id", conversation_id)\
             .order("created_at", desc=False)\
@@ -85,17 +97,17 @@ def get_conversation_messages(conversation_id: str):
         print(f"[-] Error fetching messages: {e}")
         return []
 
-def save_chat_message(conversation_id: str, role: str, content: str):
+def save_chat_message(conversation_id: str, role: str, content: str, token: str = None):
     try:
-        admin = get_supabase_admin()
-        res = admin.table("messages").insert({
+        client = get_supabase_client(token)
+        res = client.table("messages").insert({
             "conversation_id": conversation_id,
             "role": role,
             "content": content
         }).execute()
         
         from datetime import datetime, timezone
-        admin.table("conversations").update({
+        client.table("conversations").update({
             "updated_at": datetime.now(timezone.utc).isoformat()
         }).eq("id", conversation_id).execute()
         
@@ -104,10 +116,10 @@ def save_chat_message(conversation_id: str, role: str, content: str):
         print(f"[-] Error saving message: {e}")
         return None
 
-def delete_user_conversation(conversation_id: str, user_id: str):
+def delete_user_conversation(conversation_id: str, user_id: str, token: str = None):
     try:
-        admin = get_supabase_admin()
-        admin.table("conversations")\
+        client = get_supabase_client(token)
+        client.table("conversations")\
             .delete()\
             .eq("id", conversation_id)\
             .eq("user_id", user_id)\

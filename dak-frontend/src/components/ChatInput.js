@@ -3,13 +3,13 @@
 import { useState, useRef, useEffect } from 'react';
 
 const PLACEHOLDERS = {
-  'English': 'Ask Dak Sahayak or enter PIN / Consignment No...',
-  'Hindi': 'डाक सहायक से पूछें या पिन कोड / कंसाइनमेंट नंबर दर्ज करें...',
-  'Kannada': 'ಡಾಕ್ ಸಹಾಯಕ್ ಅವರನ್ನು ಕೇಳಿ ಅಥವಾ ಪಿನ್ ಕೋಡ್ ನಮೂದಿಸಿ...',
-  'Tamil': 'தபால் உதவியாளரிடம் கேளுங்கள் அல்லது பின் குறியீட்டை உள்ளிடவும்...',
-  'Telugu': 'డాక్ సహాయక్‌ని అడగండి లేదా పిన్ కోడ్ నమోదు చేయండి...',
-  'Marathi': 'डाक सहाय्यकला विचारा किंवा पिन कोड प्रविष्ट करा...',
-  'Bengali': 'ডাক সহায়ককে জিজ্ঞাসা করুন বা পিন কোড লিখুন...'
+  'English': 'Ask anything here...',
+  'Hindi': 'यहाँ कुछ भी पूछें...',
+  'Kannada': 'ಇಲ್ಲಿ ಏನಾದರೂ ಕೇಳಿ...',
+  'Tamil': 'இங்கே எதையும் கேளுங்கள்...',
+  'Telugu': 'ఇక్కడ ఏదైనా అడగండి...',
+  'Marathi': 'येथे काहीही विचारा...',
+  'Bengali': 'এখানে যেকোনো কিছু জিজ্ঞাসা করুন...'
 };
 
 export default function ChatInput({ onSend, disabled, language = 'English' }) {

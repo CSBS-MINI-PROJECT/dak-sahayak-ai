@@ -40,6 +40,25 @@ export default function Sidebar({
         <span>New Chat</span>
       </button>
 
+      <div className="sidebar-tools-grid">
+        <button className="tool-btn tool-tariff" onClick={() => onOpenModal('tariff')}>
+          <i className="fa-solid fa-calculator"></i>
+          <span>Tariff Calc</span>
+        </button>
+        <button className="tool-btn tool-pincode" onClick={() => onOpenModal('pincode')}>
+          <i className="fa-solid fa-location-dot"></i>
+          <span>PIN Search</span>
+        </button>
+        <button className="tool-btn tool-financial" onClick={() => onOpenModal('financial')}>
+          <i className="fa-solid fa-coins"></i>
+          <span>Savings ROI</span>
+        </button>
+        <button className="tool-btn tool-location" onClick={() => onOpenModal('location')}>
+          <i className="fa-solid fa-location-crosshairs"></i>
+          <span>My PIN</span>
+        </button>
+      </div>
+
       <div className="conv-list">
         {conversations.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '24px 0' }}>
@@ -74,25 +93,6 @@ export default function Sidebar({
       </div>
 
       <div className="sidebar-footer">
-        <div className="sidebar-tools-grid">
-          <button className="tool-btn" onClick={() => onOpenModal('tariff')}>
-            <i className="fa-solid fa-calculator text-red"></i>
-            <span>Tariff Calc</span>
-          </button>
-          <button className="tool-btn" onClick={() => onOpenModal('pincode')}>
-            <i className="fa-solid fa-location-dot"></i>
-            <span>PIN Search</span>
-          </button>
-          <button className="tool-btn" onClick={() => onOpenModal('financial')}>
-            <i className="fa-solid fa-coins"></i>
-            <span>Savings ROI</span>
-          </button>
-          <button className="tool-btn" onClick={() => onOpenModal('location')}>
-            <i className="fa-solid fa-location-crosshairs"></i>
-            <span>My PIN</span>
-          </button>
-        </div>
-
         <div className="user-profile-row">
           <div className="user-info">
             <div className="user-avatar">{avatarLetter}</div>
