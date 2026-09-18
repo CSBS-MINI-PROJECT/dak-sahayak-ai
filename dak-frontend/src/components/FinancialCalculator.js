@@ -17,6 +17,7 @@ export default function FinancialCalculator({ isOpen, onClose }) {
   const [amount, setAmount] = useState(10000);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
 
   if (!isOpen) return null;
 
@@ -40,6 +41,107 @@ export default function FinancialCalculator({ isOpen, onClose }) {
   };
 
   const selectedSchemeObj = SCHEMES.find(s => s.id === scheme);
+
+  const handleDownloadROI = (format = 'pdf') => {
+    if (!result) return;
+    setShowDownloadMenu(false);
+    const schemeTitle = selectedSchemeObj ? selectedSchemeObj.name : scheme.toUpperCase();
+    const dateStr = new Date().toLocaleDateString('en-IN');
+
+    if (format === 'doc' || format === 'txt') {
+      let text = `INDIA POST - SAVINGS SCHEME ROI ESTIMATE\nScheme: ${schemeTitle}\nDate: ${dateStr}\n\n`;
+      text += `Deposit Amount: ₹${Number(amount).toLocaleString('en-IN')}\n`;
+      if (result.total_invested !== undefined) text += `Total Amount Invested: ₹${result.total_invested?.toLocaleString('en-IN')}\n`;
+      if (result.interest_earned !== undefined) text += `Total Interest Earned: ₹${result.interest_earned?.toLocaleString('en-IN')}\n`;
+      if (result.quarterly_payout !== undefined) text += `Quarterly Pension Payout: ₹${result.quarterly_payout?.toLocaleString('en-IN')}\n`;
+      if (result.monthly_payout !== undefined) text += `Monthly Income Payout: ₹${result.monthly_payout?.toLocaleString('en-IN')}\n`;
+      if (result.maturity_value !== undefined) text += `Final Maturity Value: ₹${result.maturity_value?.toLocaleString('en-IN')}\n`;
+      text += `\nNote: Rates and calculations are based on official Department of Posts guidelines.`;
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `IndiaPost_${scheme}_ROI_${new Date().toISOString().split('T')[0]}.${format === 'doc' ? 'doc' : 'txt'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert('Please allow popups to save/print the PDF.');
+        return;
+      }
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>ROI Estimate - ${schemeTitle}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #222; }
+            .header { border-bottom: 2px solid #c4122f; padding-bottom: 15px; margin-bottom: 25px; }
+            .header h1 { margin: 0; color: #c4122f; font-size: 22px; }
+            .header p { margin: 4px 0 0 0; color: #666; font-size: 13px; }
+            .scheme-badge { display: inline-block; background: #fff3e0; color: #e65100; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 14px; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+            th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; font-size: 15px; }
+            th { color: #555; background: #fafafa; }
+            .highlight { color: #2e7d32; font-weight: 700; font-size: 18px; }
+            .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #888; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>डाक सहायक (Dak Sahayak)</h1>
+            <p>Official India Post Small Savings ROI Breakdown</p>
+          </div>
+          <div class="scheme-badge">${schemeTitle} (${selectedSchemeObj?.rate || ''})</div>
+          <table>
+            <tr>
+              <td><strong>Deposit Amount:</strong></td>
+              <td>₹${Number(amount).toLocaleString('en-IN')}</td>
+            </tr>
+            ${result.total_invested !== undefined ? `
+            <tr>
+              <td>Total Amount Invested:</td>
+              <td>₹${result.total_invested?.toLocaleString('en-IN')}</td>
+            </tr>` : ''}
+            ${result.interest_earned !== undefined ? `
+            <tr>
+              <td>Total Interest Earned:</td>
+              <td style="color:#f57c00; font-weight:600;">₹${result.interest_earned?.toLocaleString('en-IN')}</td>
+            </tr>` : ''}
+            ${result.quarterly_payout !== undefined ? `
+            <tr>
+              <td>Quarterly Pension Payout:</td>
+              <td style="color:#2e7d32; font-weight:600;">₹${result.quarterly_payout?.toLocaleString('en-IN')} / quarter</td>
+            </tr>` : ''}
+            ${result.monthly_payout !== undefined ? `
+            <tr>
+              <td>Monthly Income Payout:</td>
+              <td style="color:#2e7d32; font-weight:600;">₹${result.monthly_payout?.toLocaleString('en-IN')} / month</td>
+            </tr>` : ''}
+            ${result.maturity_value !== undefined ? `
+            <tr style="background:#f1f8e9;">
+              <td><strong>Final Maturity Value:</strong></td>
+              <td class="highlight">₹${result.maturity_value?.toLocaleString('en-IN')}</td>
+            </tr>` : ''}
+          </table>
+          <div class="footer">
+            Generated on ${dateStr} • Department of Posts, Government of India
+          </div>
+          <script>
+            window.onload = function() { window.print(); };
+          </script>
+        </body>
+        </html>
+      `;
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -95,7 +197,7 @@ export default function FinancialCalculator({ isOpen, onClose }) {
                 </>
               ) : (
                 <>
-                  <i className="fa-solid fa-calculator"></i> Calculate Maturity & Payout
+                  <i className="fa-solid fa-calculator"></i> Calculate Maturity &amp; Payout
                 </>
               )}
             </button>
@@ -141,6 +243,68 @@ export default function FinancialCalculator({ isOpen, onClose }) {
                   <span>₹{result.maturity_value?.toLocaleString('en-IN')}</span>
                 </div>
               )}
+
+              {/* Single Download Button with Format Dropdown */}
+              <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', position: 'relative' }}>
+                <button
+                  type="button"
+                  className="bubble-action-btn"
+                  title="Download breakdown"
+                  onClick={() => setShowDownloadMenu(prev => !prev)}
+                >
+                  <i className="fa-solid fa-download" style={{ color: '#ef5350' }}></i>
+                  <span>Download</span>
+                  <i className="fa-solid fa-chevron-down" style={{ fontSize: '0.65rem', marginLeft: '4px', opacity: 0.7 }}></i>
+                </button>
+
+                {showDownloadMenu && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '110%',
+                      right: 0,
+                      background: '#1e2022',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                      minWidth: '160px',
+                      zIndex: 100,
+                    }}
+                  >
+                    {[
+                      { format: 'pdf', label: 'PDF (Print)', icon: 'fa-file-pdf', color: '#ef5350' },
+                      { format: 'doc', label: 'Word Doc (.doc)', icon: 'fa-file-word', color: '#42a5f5' },
+                      { format: 'txt', label: 'Plain Text (.txt)', icon: 'fa-file-lines', color: '#66bb6a' },
+                    ].map(({ format, label, icon, color }) => (
+                      <button
+                        key={format}
+                        type="button"
+                        onClick={() => handleDownloadROI(format)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          width: '100%',
+                          padding: '10px 14px',
+                          background: 'transparent',
+                          border: 'none',
+                          color: 'var(--text-bright)',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          textAlign: 'left',
+                          transition: 'background 0.15s',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <i className={`fa-solid ${icon}`} style={{ color, width: '14px' }}></i>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
