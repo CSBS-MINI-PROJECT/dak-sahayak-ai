@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ThemeToggle from '../../components/ThemeToggle';
 import { supabase } from '../../lib/supabase';
 
 export default function SignupPage() {
@@ -53,7 +54,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container" style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '20px', right: '24px', zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
       <div className="auth-card">
         <div className="auth-brand">
           <div className="auth-logo">

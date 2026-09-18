@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap');
 
-:root {
+:root,
+[data-theme="dark"] {
   --bg-primary: #131314;
   --bg-secondary: #1e1f20;
   --bg-sidebar: #18191a;
@@ -18,6 +19,82 @@
   --radius-md: 10px;
   --radius-sm: 6px;
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Themed variables */
+  --header-bg: #131314;
+  --form-control-bg: #161718;
+  --card-inner-bg: #161718;
+  --card-inner-border: #333537;
+  --active-conv-bg: #2b2d30;
+  --active-conv-color: #ffffff;
+  --table-header-bg: #2b2d30;
+  --code-bg: #232527;
+  --code-text: #ff98a5;
+  --modal-backdrop: rgba(0, 0, 0, 0.75);
+  --modal-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --tool-btn-bg: rgba(30, 31, 32, 0.7);
+  --tool-btn-border: rgba(255, 255, 255, 0.05);
+  --tool-btn-hover-bg: linear-gradient(135deg, rgba(42, 44, 46, 0.85) 0%, rgba(32, 33, 35, 0.85) 100%);
+  --auth-bg: radial-gradient(circle at top, #241417 0%, #131314 60%);
+  --input-container-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --input-container-focus-shadow: 0 8px 28px rgba(196, 18, 47, 0.2);
+  --chat-model-badge-bg: rgba(196, 18, 47, 0.12);
+  --chat-model-badge-border: rgba(196, 18, 47, 0.3);
+  --chat-model-badge-color: #ff8595;
+  --theme-toggle-bg: #202124;
+  --theme-toggle-border: #3c4043;
+  --theme-toggle-btn-active-bg: #303134;
+  --theme-toggle-btn-active-color: #ffffff;
+  --theme-toggle-btn-inactive-color: #9aa0a6;
+  --theme-toggle-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-sidebar: #f1f3f6;
+  --bg-hover: #e8ecf1;
+  --bg-bubble-user: #e3e8f0;
+  --bg-bubble-bot: transparent;
+  --accent-red: #c4122f;
+  --accent-red-hover: #a50e27;
+  --accent-gold: #d97706;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --text-bright: #111827;
+  --border-color: #e2e8f0;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Themed variables */
+  --header-bg: #ffffff;
+  --form-control-bg: #ffffff;
+  --card-inner-bg: #f8fafc;
+  --card-inner-border: #e2e8f0;
+  --active-conv-bg: #fee2e2;
+  --active-conv-color: #991b1b;
+  --table-header-bg: #f1f5f9;
+  --code-bg: #f1f5f9;
+  --code-text: #b91c1c;
+  --modal-backdrop: rgba(15, 23, 42, 0.45);
+  --modal-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+  --tool-btn-bg: #ffffff;
+  --tool-btn-border: #e2e8f0;
+  --tool-btn-hover-bg: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  --auth-bg: radial-gradient(circle at top, #fee2e2 0%, #f8f9fa 65%);
+  --input-container-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  --input-container-focus-shadow: 0 8px 24px rgba(196, 18, 47, 0.15);
+  --chat-model-badge-bg: rgba(196, 18, 47, 0.08);
+  --chat-model-badge-border: rgba(196, 18, 47, 0.22);
+  --chat-model-badge-color: #c4122f;
+  --theme-toggle-bg: #e8ecf2;
+  --theme-toggle-border: #cbd5e1;
+  --theme-toggle-btn-active-bg: #ffffff;
+  --theme-toggle-btn-active-color: #111827;
+  --theme-toggle-btn-inactive-color: #64748b;
+  --theme-toggle-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -32,6 +109,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 a {
@@ -66,8 +144,121 @@ button {
 }
 
 .sidebar.closed {
-  width: 0;
-  transform: translateX(-100%);
+  width: 76px;
+  transform: none;
+}
+
+/* Sidebar Header when closed */
+.sidebar.closed .sidebar-header {
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.sidebar.closed .sidebar-brand {
+  gap: 0;
+  justify-content: center;
+}
+
+.sidebar.closed .brand-title {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+/* New chat button when closed */
+.sidebar.closed .new-chat-btn {
+  margin: 16px 14px 10px;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  border-radius: 50%;
+  gap: 0;
+}
+
+.sidebar.closed .new-chat-btn span {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+/* Tools grid when closed */
+.sidebar.closed .sidebar-tools-grid {
+  margin: 40px 14px 16px;
+  width: calc(100% - 28px);
+  align-items: center;
+}
+
+.sidebar.closed .tool-btn {
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  justify-content: center;
+  gap: 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar.closed .tool-btn span {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+.sidebar.closed .tool-btn:hover {
+  transform: scale(1.06);
+}
+
+/* Mini conversations list when closed */
+.sidebar.closed .conv-list {
+  padding: 10px 0;
+}
+
+.sidebar.closed .conv-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.sidebar.closed .conv-item > div {
+  gap: 0 !important;
+  justify-content: center;
+}
+
+.sidebar.closed .conv-title {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+.sidebar.closed .conv-del-btn {
+  opacity: 0 !important;
+  max-width: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* Footer when closed */
+.sidebar.closed .sidebar-footer {
+  padding: 16px 14px;
+}
+
+.sidebar.closed .user-profile-row {
+  justify-content: center;
+}
+
+.sidebar.closed .user-info {
+  gap: 0;
+  justify-content: center;
+  width: 100%;
+}
+
+.sidebar.closed .user-email,
+.sidebar.closed .logout-btn {
+  opacity: 0;
+  max-width: 0;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
 }
 
 .sidebar-header {
@@ -100,6 +291,11 @@ button {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-bright);
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
 }
 
 .brand-title span {
@@ -118,7 +314,17 @@ button {
   gap: 12px;
   font-size: 0.95rem;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  width: calc(100% - 40px);
+}
+
+.new-chat-btn span {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
 }
 
 .new-chat-btn:hover {
@@ -150,8 +356,8 @@ button {
 }
 
 .conv-item.active {
-  background-color: #2b2d30;
-  color: var(--text-bright);
+  background-color: var(--active-conv-bg);
+  color: var(--active-conv-color);
   font-weight: 600;
   border-left: 3px solid var(--accent-red);
 }
@@ -161,13 +367,17 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
+  opacity: 1;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .conv-del-btn {
   opacity: 0;
   color: var(--text-muted);
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 4px;
+  max-width: 30px;
+  overflow: hidden;
 }
 
 .conv-item:hover .conv-del-btn {
@@ -188,29 +398,165 @@ button {
 }
 
 .sidebar-tools-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 6px;
+  margin: 40px 20px 16px;
+  width: calc(100% - 40px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tool-btn {
-  background-color: var(--bg-secondary);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  padding: 8px 12px;
+  width: 100%;
+  height: auto;
+  min-height: 40px;
   border-radius: var(--radius-md);
-  font-size: 0.82rem;
+  background: var(--tool-btn-bg);
+  color: var(--text-main);
+  border: 1px solid var(--tool-btn-border);
+  padding: 8px 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s;
+  gap: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* Base icon styling inside tools */
+.tool-btn i {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+/* Icon theme colors */
+.tool-btn.tool-tariff i {
+  color: #ff5252;
+  background: rgba(255, 82, 82, 0.1);
+  border-color: rgba(255, 82, 82, 0.15);
+  box-shadow: 0 0 10px rgba(255, 82, 82, 0.15);
+}
+
+.tool-btn.tool-pincode i {
+  color: #40c4ff;
+  background: rgba(64, 196, 255, 0.1);
+  border-color: rgba(64, 196, 255, 0.15);
+  box-shadow: 0 0 10px rgba(64, 196, 255, 0.15);
+}
+
+.tool-btn.tool-financial i {
+  color: #ffd740;
+  background: rgba(255, 215, 64, 0.1);
+  border-color: rgba(255, 215, 64, 0.15);
+  box-shadow: 0 0 10px rgba(255, 215, 64, 0.15);
+}
+
+.tool-btn.tool-location i {
+  color: #69f0ae;
+  background: rgba(105, 240, 174, 0.1);
+  border-color: rgba(105, 240, 174, 0.15);
+  box-shadow: 0 0 10px rgba(105, 240, 174, 0.15);
+}
+
+/* Ensure text is always visible and styled nicely */
+.tool-btn span {
+  opacity: 1;
+  max-width: 150px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: color 0.25s, transform 0.25s, opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+  z-index: 2;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* Hover effects: Slide right slightly, background lights up */
 .tool-btn:hover {
-  background-color: var(--bg-hover);
-  border-color: var(--accent-red);
+  transform: translateX(5px);
   color: var(--text-bright);
+  background: var(--tool-btn-hover-bg);
+}
+
+.tool-btn:hover span {
+  color: var(--text-bright);
+}
+
+/* Scale and rotate icon on hover */
+.tool-btn:hover i {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.tool-btn:active {
+  transform: translateX(2px);
+}
+
+/* Left colored accent indicator bar on hover */
+.tool-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0px;
+  background: transparent;
+  transition: width 0.2s ease, background-color 0.2s ease;
+  z-index: 1;
+}
+
+.tool-btn.tool-tariff:hover::after {
+  width: 4px;
+  background: #ff5252;
+}
+
+.tool-btn.tool-pincode:hover::after {
+  width: 4px;
+  background: #40c4ff;
+}
+
+.tool-btn.tool-financial:hover::after {
+  width: 4px;
+  background: #ffd740;
+}
+
+.tool-btn.tool-location:hover::after {
+  width: 4px;
+  background: #69f0ae;
+}
+
+/* Individual button border color changes on hover */
+.tool-btn.tool-tariff:hover {
+  border-color: rgba(255, 82, 82, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 82, 82, 0.15);
+}
+
+.tool-btn.tool-pincode:hover {
+  border-color: rgba(64, 196, 255, 0.4);
+  box-shadow: 0 4px 15px rgba(64, 196, 255, 0.15);
+}
+
+.tool-btn.tool-financial:hover {
+  border-color: rgba(255, 215, 64, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 215, 64, 0.15);
+}
+
+.tool-btn.tool-location:hover {
+  border-color: rgba(105, 240, 174, 0.4);
+  box-shadow: 0 4px 15px rgba(105, 240, 174, 0.15);
 }
 
 .user-profile-row {
@@ -247,13 +593,18 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 150px;
+  opacity: 1;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .logout-btn {
   color: var(--text-muted);
   padding: 6px;
   border-radius: var(--radius-sm);
-  transition: all 0.2s;
+  transition: all 0.2s, opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  max-width: 40px;
+  overflow: hidden;
 }
 
 .logout-btn:hover {
@@ -277,8 +628,9 @@ button {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-primary);
+  background-color: var(--header-bg);
   z-index: 10;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .header-left {
@@ -304,19 +656,84 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(196, 18, 47, 0.12);
-  border: 1px solid rgba(196, 18, 47, 0.3);
+  background: var(--chat-model-badge-bg);
+  border: 1px solid var(--chat-model-badge-border);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.82rem;
-  color: #ff8595;
+  color: var(--chat-model-badge-color);
   font-weight: 500;
+  transition: all 0.25s ease;
 }
 
 .header-right {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* Theme Toggle Component Styles */
+.theme-toggle-container {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--theme-toggle-bg);
+  border: 1px solid var(--theme-toggle-border);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--theme-toggle-btn-inactive-color);
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--text-bright);
+}
+
+.theme-toggle-btn.active {
+  background-color: var(--theme-toggle-btn-active-bg);
+  color: var(--theme-toggle-btn-active-color);
+  font-weight: 600;
+  box-shadow: var(--theme-toggle-shadow);
+  border-color: var(--border-color);
+}
+
+.theme-icon {
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle-btn.active .theme-icon.sun {
+  color: #f59e0b;
+  transform: rotate(15deg);
+}
+
+.theme-toggle-btn.active .theme-icon.moon {
+  color: #60a5fa;
+  transform: rotate(-12deg);
+}
+
+@media (max-width: 640px) {
+  .theme-toggle-btn {
+    padding: 5px 8px;
+  }
+  .theme-toggle-btn .theme-text {
+    display: none;
+  }
 }
 
 .lang-select {
@@ -521,17 +938,17 @@ button {
 }
 
 .bot-markdown th {
-  background-color: #2b2d30;
+  background-color: var(--table-header-bg);
   color: var(--text-bright);
 }
 
 .bot-markdown code {
-  background-color: #232527;
+  background-color: var(--code-bg);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
   font-size: 0.88em;
-  color: #ff98a5;
+  color: var(--code-text);
 }
 
 /* Streaming cursor */
@@ -636,7 +1053,7 @@ button {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: var(--modal-backdrop);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -653,7 +1070,7 @@ button {
   max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--modal-shadow);
   animation: modalFadeIn 0.2s ease-out;
 }
 
@@ -709,14 +1126,14 @@ button {
 .form-control {
   width: 100%;
   padding: 12px 14px;
-  background-color: #161718;
+  background-color: var(--form-control-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   color: var(--text-bright);
   font-size: 0.95rem;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .form-control:focus {
@@ -750,7 +1167,8 @@ button {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: radial-gradient(circle at top, #241417 0%, var(--bg-primary) 60%);
+  background: var(--auth-bg);
+  transition: background 0.3s ease;
 }
 
 .auth-card {
@@ -760,7 +1178,8 @@ button {
   padding: 36px 32px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--modal-shadow);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .auth-brand {

@@ -8,6 +8,7 @@ import ChatInput from '../../components/ChatInput';
 import TariffCalculator from '../../components/TariffCalculator';
 import PincodeLookup from '../../components/PincodeLookup';
 import FinancialCalculator from '../../components/FinancialCalculator';
+import ThemeToggle from '../../components/ThemeToggle';
 import { supabase } from '../../lib/supabase';
 import {
   fetchConversations,
@@ -221,12 +222,13 @@ export default function ChatPage() {
                 <i className="fa-solid fa-bars"></i>
               </button>
               <div className="chat-model-badge">
-                <i className="fa-solid fa-sparkles"></i>
-                <span>Gemini 2.5 Flash + Supabase Vector RAG</span>
+                <i className="fa-solid fa-envelope-open-text"></i>
+                <span>Your official India Post AI assistant</span>
               </div>
             </div>
 
             <div className="header-right">
+              <ThemeToggle />
               <select
                 className="lang-select"
                 value={language}

@@ -92,7 +92,7 @@ export default function TariffCalculator({ isOpen, onClose }) {
           </form>
 
           {result && (
-            <div style={{ marginTop: '20px', padding: '16px', backgroundColor: '#161718', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+            <div style={{ marginTop: '20px', padding: '16px', backgroundColor: 'var(--card-inner-bg)', borderRadius: '12px', border: '1px solid var(--card-inner-border)' }}>
               <h4 style={{ color: 'var(--text-bright)', marginBottom: '12px', fontSize: '0.95rem' }}>
                 <i className="fa-solid fa-receipt" style={{ color: 'var(--accent-gold)' }}></i> Official Tariff Breakdown
               </h4>
