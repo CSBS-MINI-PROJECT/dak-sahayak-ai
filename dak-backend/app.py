@@ -138,6 +138,44 @@ def chat():
                 save_chat_message(conversation_id, "assistant", pin_response)
             return Response(pin_response, content_type="text/plain; charset=utf-8")
 
+    # 1.1 Official Parcel / Consignment Tracking Resolution
+    msg_l = user_message.lower().strip()
+    is_tracking_query = any(k in msg_l for k in [
+        "track", "tracking", "consignment", "trace", "parcel status",
+        "speed post status", "shipment status", "where is my parcel", "where is my post",
+        "speed post tracking", "registered post tracking", "package status"
+    ])
+    consignment_match = re.search(r'\b([A-Za-z]{2}\d{9}[A-Za-z]{2})\b', user_message)
+
+    if is_tracking_query or consignment_match:
+        if consignment_match:
+            t_num = consignment_match.group(1).upper()
+            tracking_response = f"""### 📦 India Post Consignment Tracking
+
+* **Consignment Number:** `{t_num}`
+* **Official Tracking Portal:** [India Post Consignment Tracking](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx)
+
+**How to Track:**
+1. Visit the official [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx).
+2. Enter your Consignment Number: `{t_num}`.
+3. Solve the security captcha to view live transit milestones and delivery status.
+
+📱 **SMS Tracking:** Send `POST TRACK {t_num}` to **166** or **51969**."""
+        else:
+            tracking_response = f"""### 📦 India Post Consignment Tracking
+
+You can track your Speed Post, Registered Post, or Parcel through official India Post channels:
+
+1. **Official Web Portal:**
+   Visit [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx) and enter your 13-character Consignment Number (e.g. `EK123456789IN`).
+
+2. **SMS Tracking Service:**
+   Send `POST TRACK <Consignment Number>` (e.g., `POST TRACK EK123456789IN`) to **166** or **51969**."""
+
+        if conversation_id:
+            save_chat_message(conversation_id, "assistant", tracking_response)
+        return Response(tracking_response, content_type="text/plain; charset=utf-8")
+
     # 2. Fetch past conversation history from Supabase for multi-turn context
     history_turns = []
     if conversation_id:
@@ -191,6 +229,12 @@ def chat():
     system_prompt = f"""You are Dak Sahayak (डाक सहायक), the official India Post AI assistant.
 Respond strictly and fluently in {language}. If the language is a regional Indian language (e.g. Hindi, Kannada, Tamil, Telugu, Marathi, Bengali), generate natural native script text.
 Always provide structured, clear answers for Post Office Small Savings Schemes, POSB Banking charges, Mail/Speed Post rates, and Services.
+
+Official India Post Consignment / Parcel Tracking:
+- When a user asks to track a parcel, consignment, Speed Post, registered post, or article:
+  - Direct them to the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx
+  - Mention official SMS tracking: Send 'POST TRACK <Consignment Number>' to 166 or 51969.
+  - Do NOT provide third-party tracking links.
 
 Official India Post Small Savings Rates:
 - Sukanya Samriddhi Account (SSA): 8.2% p.a. (Compounded annually)
@@ -262,7 +306,14 @@ Official India Post Knowledge Base (from Supabase Vector DB):
                         print(f"[-] Streaming error with {m}: {ex2}")
 
         if not stream_success or not full_text.strip():
-            full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
+            tracking_match = re.search(r'\b[A-Za-z]{2}\d{9}[A-Za-z]{2}\b', user_message)
+            if tracking_match:
+                t_num = tracking_match.group(0).upper()
+                full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+            elif any(w in msg_lower for w in ["track", "consignment", "parcel", "speed post"]):
+                full_text = "You can track your parcel on the official India Post tracking portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+            else:
+                full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
             yield full_text
 
         # Save assistant response to Supabase messages table
@@ -548,4 +599,4 @@ def api_form_chat_flow():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)

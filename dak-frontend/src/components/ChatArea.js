@@ -5,6 +5,11 @@ import MessageBubble from './MessageBubble';
 
 const PROMPT_SUGGESTIONS = [
   {
+    icon: 'fa-solid fa-truck-fast',
+    title: 'Track Parcel & Speed Post',
+    query: 'How do I track my India Post parcel or consignment?'
+  },
+  {
     icon: 'fa-solid fa-bolt',
     title: 'Speed Post Rates & Timelines',
     query: 'What are domestic Speed Post tariff rates and delivery timelines?'
@@ -13,11 +18,6 @@ const PROMPT_SUGGESTIONS = [
     icon: 'fa-solid fa-piggy-bank',
     title: 'Sukanya Samriddhi (SSA)',
     query: 'Tell me about Sukanya Samriddhi Account (SSA) interest rate, tax benefits and eligibility.'
-  },
-  {
-    icon: 'fa-solid fa-hand-holding-dollar',
-    title: 'Public Provident Fund (PPF)',
-    query: 'What are the features, interest rate, and tax deductions under PPF?'
   },
   {
     icon: 'fa-solid fa-file-invoice',
