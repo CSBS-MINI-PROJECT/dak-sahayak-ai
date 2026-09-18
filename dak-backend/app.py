@@ -153,24 +153,31 @@ def chat():
             tracking_response = f"""### 📦 India Post Consignment Tracking
 
 * **Consignment Number:** `{t_num}`
-* **Official Tracking Portal:** [India Post Consignment Tracking](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx)
+* **Official Portal:** [India Post Official Tracking Portal](https://www.indiapost.gov.in/)
 
 **How to Track:**
-1. Visit the official [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx).
-2. Enter your Consignment Number: `{t_num}`.
-3. Solve the security captcha to view live transit milestones and delivery status.
+1. Visit the official **[India Post Portal (indiapost.gov.in)](https://www.indiapost.gov.in/)**.
+2. Locate the **Track 'N Trace** box on the homepage.
+3. Enter your Consignment Number: `{t_num}`.
+4. Complete the security captcha and click **Search / Track Now**.
 
-📱 **SMS Tracking:** Send `POST TRACK {t_num}` to **166** or **51969**."""
+📱 **SMS Tracking:** Send `POST TRACK {t_num}` to **166** or **51969**
+📞 **Helpline:** Call India Post Toll-Free at **1800 266 6868**"""
         else:
             tracking_response = f"""### 📦 India Post Consignment Tracking
 
 You can track your Speed Post, Registered Post, or Parcel through official India Post channels:
 
 1. **Official Web Portal:**
-   Visit [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx) and enter your 13-character Consignment Number (e.g. `EK123456789IN`).
+   Visit **[India Post Official Portal (indiapost.gov.in)](https://www.indiapost.gov.in/)**, go to the **Track 'N Trace** section on the homepage, and enter your 13-character Consignment Number (e.g. `EK123456789IN`).
 
 2. **SMS Tracking Service:**
-   Send `POST TRACK <Consignment Number>` (e.g., `POST TRACK EK123456789IN`) to **166** or **51969**."""
+   Send `POST TRACK <Consignment Number>` (e.g., `POST TRACK EK123456789IN`) to **166** or **51969**.
+
+3. **Official Mobile App:**
+   Download the **Postinfo** app from Google Play Store or Apple App Store.
+
+📞 **Toll-Free Helpline:** **1800 266 6868** (Toll-Free)"""
 
         if conversation_id:
             save_chat_message(conversation_id, "assistant", tracking_response)
@@ -232,8 +239,9 @@ Always provide structured, clear answers for Post Office Small Savings Schemes, 
 
 Official India Post Consignment / Parcel Tracking:
 - When a user asks to track a parcel, consignment, Speed Post, registered post, or article:
-  - Direct them to the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx
+  - Direct them to the official India Post portal: https://www.indiapost.gov.in/
   - Mention official SMS tracking: Send 'POST TRACK <Consignment Number>' to 166 or 51969.
+  - Mention the official Postinfo Mobile app and toll-free helpline 1800 266 6868.
   - Do NOT provide third-party tracking links.
 
 Official India Post Small Savings Rates:
@@ -309,9 +317,9 @@ Official India Post Knowledge Base (from Supabase Vector DB):
             tracking_match = re.search(r'\b[A-Za-z]{2}\d{9}[A-Za-z]{2}\b', user_message)
             if tracking_match:
                 t_num = tracking_match.group(0).upper()
-                full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+                full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/ (enter your consignment number in the Track 'N Trace section)."
             elif any(w in msg_lower for w in ["track", "consignment", "parcel", "speed post"]):
-                full_text = "You can track your parcel on the official India Post tracking portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+                full_text = "You can track your parcel on the official India Post portal: https://www.indiapost.gov.in/ (use the Track 'N Trace section on the homepage)."
             else:
                 full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
             yield full_text
