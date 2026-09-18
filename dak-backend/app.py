@@ -80,7 +80,7 @@ def create_conversation():
         return jsonify({"error": "Unauthorized"}), 401
     token = get_auth_token()
     data = request.get_json() or {}
-    title = data.get("title", "New Chat").strip()
+    title = str(data.get("title") or "New Chat").strip()
     conv_id = create_user_conversation(user.id, title=title, token=token)
     if not conv_id:
         return jsonify({"error": "Failed to create conversation"}), 500
@@ -111,11 +111,11 @@ def chat():
     user = get_auth_user()
     token = get_auth_token()
     data = request.get_json() or {}
-    user_message = data.get("message", "").strip()
-    conversation_id = data.get("conversation_id", "").strip()
-    language = data.get("language", "English").strip()
-    pincode = data.get("pincode", "")
-    user_location = data.get("user_location", {})
+    user_message = str(data.get("message") or "").strip()
+    conversation_id = str(data.get("conversation_id") or "").strip()
+    language = str(data.get("language") or "English").strip()
+    pincode = str(data.get("pincode") or "").strip()
+    user_location = data.get("user_location") or {}
 
     if not user_message:
         return jsonify({"error": "Message cannot be empty"}), 400
