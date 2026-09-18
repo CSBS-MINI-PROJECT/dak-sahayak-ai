@@ -51,7 +51,7 @@ export default function ChatArea({
             Namaste, I am <span>Dak Sahayak</span>
           </h1>
           <p className="welcome-desc">
-            Your official India Post assistant powered by Gemini AI and Supabase Vector DB. Ask about savings schemes, mail tariffs, bank charges, or PIN directory.
+            Your official India Post AI assistant. Ask about savings schemes, mail tariffs, bank charges, or PIN directory.
           </p>
 
           <div className="prompt-suggestions">

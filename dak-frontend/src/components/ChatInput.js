@@ -69,7 +69,7 @@ export default function ChatInput({ onSend, disabled, language = 'English' }) {
         </button>
       </form>
       <p className="input-disclaimer">
-        Dak Sahayak uses Google Gemini + Supabase Vector RAG. Answers are grounded in official India Post rules.
+        Dak Sahayak is your official India Post AI assistant. Answers are grounded in official India Post rules.
       </p>
     </div>
   );
