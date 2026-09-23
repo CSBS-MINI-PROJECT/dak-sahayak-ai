@@ -67,7 +67,7 @@ export default function AuthGuard({ children }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#131314', color: '#e3e3e3' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)', color: 'var(--text-main)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
           <i className="fa-solid fa-spinner fa-spin" style={{ color: '#c4122f', fontSize: '1.5rem' }}></i>
           <span>Verifying Session...</span>

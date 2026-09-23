@@ -44,12 +44,18 @@ if GEMINI_API_KEY:
 else:
     print("[AI Status] Gemini API Key missing!")
 
-def get_auth_user():
-    """Extracts and verifies Bearer token from request Authorization header."""
+def get_auth_token():
+    """Extracts the Bearer token from the request Authorization header."""
     auth_header = request.headers.get("Authorization", "")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
-    token = auth_header.split(" ")[1]
+    return auth_header.split(" ")[1]
+
+def get_auth_user():
+    """Extracts and verifies Bearer token from request Authorization header."""
+    token = get_auth_token()
+    if not token:
+        return None
     return get_user_from_token(token)
 
 @app.route("/api/health", methods=["GET"])
@@ -63,7 +69,8 @@ def list_conversations():
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    conversations = get_user_conversations(user.id)
+    token = get_auth_token()
+    conversations = get_user_conversations(user.id, token=token)
     return jsonify({"conversations": conversations})
 
 @app.route("/api/conversations", methods=["POST"])
@@ -71,9 +78,10 @@ def create_conversation():
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
+    token = get_auth_token()
     data = request.get_json() or {}
-    title = data.get("title", "New Chat").strip()
-    conv_id = create_user_conversation(user.id, title=title)
+    title = str(data.get("title") or "New Chat").strip()
+    conv_id = create_user_conversation(user.id, title=title, token=token)
     if not conv_id:
         return jsonify({"error": "Failed to create conversation"}), 500
     return jsonify({"conversation_id": conv_id, "title": title})
@@ -83,7 +91,8 @@ def delete_conversation(conversation_id):
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    success = delete_user_conversation(conversation_id, user.id)
+    token = get_auth_token()
+    success = delete_user_conversation(conversation_id, user.id, token=token)
     return jsonify({"success": success})
 
 @app.route("/api/conversations/<conversation_id>/messages", methods=["GET"])
@@ -91,7 +100,8 @@ def list_messages(conversation_id):
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    messages = get_conversation_messages(conversation_id)
+    token = get_auth_token()
+    messages = get_conversation_messages(conversation_id, token=token)
     return jsonify({"messages": messages})
 
 # --- Main Streaming Chat Endpoint with Supabase RAG ---
@@ -99,23 +109,24 @@ def list_messages(conversation_id):
 @app.route("/api/chat", methods=["POST"])
 def chat():
     user = get_auth_user()
+    token = get_auth_token()
     data = request.get_json() or {}
-    user_message = data.get("message", "").strip()
-    conversation_id = data.get("conversation_id", "").strip()
-    language = data.get("language", "English").strip()
-    pincode = data.get("pincode", "")
-    user_location = data.get("user_location", {})
+    user_message = str(data.get("message") or "").strip()
+    conversation_id = str(data.get("conversation_id") or "").strip()
+    language = str(data.get("language") or "English").strip()
+    pincode = str(data.get("pincode") or "").strip()
+    user_location = data.get("user_location") or {}
 
     if not user_message:
         return jsonify({"error": "Message cannot be empty"}), 400
 
     # Auto-create conversation if not provided
     if user and not conversation_id:
-        conversation_id = create_user_conversation(user.id, title=user_message[:40])
+        conversation_id = create_user_conversation(user.id, title=user_message[:40], token=token)
 
     # Save user message to Supabase
     if conversation_id:
-        save_chat_message(conversation_id, "user", user_message)
+        save_chat_message(conversation_id, "user", user_message, token=token)
 
     # 1. Instant PIN Code Resolution
     pin_matches = re.findall(r'\b[1-9][0-9]{5}\b', user_message)
@@ -135,7 +146,7 @@ def chat():
 * **Postal Circle:** {po.get('Circle', 'N/A')}
 * **Head Office (HO):** {po.get('HeadOffice', 'N/A')}"""
             if conversation_id:
-                save_chat_message(conversation_id, "assistant", pin_response)
+                save_chat_message(conversation_id, "assistant", pin_response, token=token)
             return Response(pin_response, content_type="text/plain; charset=utf-8")
 
     # 1.1 Official Parcel / Consignment Tracking Resolution
@@ -186,7 +197,7 @@ You can track your Speed Post, Registered Post, or Parcel through official India
     # 2. Fetch past conversation history from Supabase for multi-turn context
     history_turns = []
     if conversation_id:
-        past_msgs = get_conversation_messages(conversation_id)
+        past_msgs = get_conversation_messages(conversation_id, token=token)
         # Exclude the very last user message that was just saved
         for m in past_msgs[:-1]:
             role = "user" if m.get("role") == "user" else "model"
@@ -326,10 +337,10 @@ Official India Post Knowledge Base (from Supabase Vector DB):
 
         # Save assistant response to Supabase messages table
         if conversation_id:
-            save_chat_message(conversation_id, "assistant", full_text)
+            save_chat_message(conversation_id, "assistant", full_text, token=token)
             # Update title on first turn
             if len(history_turns) == 0:
-                update_conversation_title(conversation_id, user_message[:45])
+                update_conversation_title(conversation_id, user_message[:45], token=token)
 
     return Response(stream_with_context(generate_stream()), content_type="text/plain; charset=utf-8")
 
