@@ -5,3 +5,4 @@ supabase
 python-dotenv
 requests
 PyJWT
+edge-tts

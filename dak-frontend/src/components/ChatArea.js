@@ -30,6 +30,7 @@ export default function ChatArea({
   messages = [],
   streamingText = '',
   isStreaming = false,
+  language = 'English',
   onSelectPrompt
 }) {
   const bottomRef = useRef(null);
@@ -81,6 +82,7 @@ export default function ChatArea({
               key={msg.id || index}
               role={msg.role}
               content={msg.content}
+              language={language}
             />
           ))}
 
@@ -89,6 +91,7 @@ export default function ChatArea({
               role="assistant"
               content={streamingText}
               isStreaming={true}
+              language={language}
             />
           )}
 

@@ -138,3 +138,35 @@ export async function reversePincode(lat, lon) {
   if (!res.ok) throw new Error('Failed to reverse geocode location');
   return await res.json();
 }
+
+export async function fetchTTSAudio(text, language = 'English', gender = 'female') {
+  const res = await fetch(`${API_BASE}/tts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, language, gender })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `TTS request failed with status ${res.status}`);
+  }
+
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+export async function translateToEnglish(text, sourceLanguage = 'auto') {
+  const res = await fetch(`${API_BASE}/translate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, source_language: sourceLanguage })
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || `Translation failed with status ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.translated_text;
+}

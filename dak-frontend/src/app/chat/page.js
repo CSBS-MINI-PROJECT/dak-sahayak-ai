@@ -256,6 +256,7 @@ export default function ChatPage() {
             messages={messages}
             streamingText={streamingText}
             isStreaming={isStreaming}
+            language={language}
             onSelectPrompt={(prompt) => handleSendMessage(prompt)}
           />
 
