@@ -62,8 +62,8 @@ export default function RootPage() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#131314',
-      color: '#e3e3e3',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-main)',
       fontFamily: 'system-ui, sans-serif'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>

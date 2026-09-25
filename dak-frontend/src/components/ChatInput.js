@@ -183,7 +183,7 @@ export default function ChatInput({ onSend, disabled, language = 'English' }) {
       )}
 
       <p className="input-disclaimer">
-        Dak Sahayak supports Voice & Text with Indian accents across 7 Indian languages.
+        Dak Sahayak is your official India Post AI assistant. Answers are grounded in official India Post rules. Supports Voice & Text across 7 Indian languages.
       </p>
     </div>
   );

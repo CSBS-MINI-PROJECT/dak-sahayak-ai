@@ -45,12 +45,18 @@ if GEMINI_API_KEY:
 else:
     print("[AI Status] Gemini API Key missing!")
 
-def get_auth_user():
-    """Extracts and verifies Bearer token from request Authorization header."""
+def get_auth_token():
+    """Extracts the Bearer token from the request Authorization header."""
     auth_header = request.headers.get("Authorization", "")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
-    token = auth_header.split(" ")[1]
+    return auth_header.split(" ")[1]
+
+def get_auth_user():
+    """Extracts and verifies Bearer token from request Authorization header."""
+    token = get_auth_token()
+    if not token:
+        return None
     return get_user_from_token(token)
 
 @app.route("/", methods=["GET"])
@@ -78,7 +84,8 @@ def list_conversations():
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    conversations = get_user_conversations(user.id)
+    token = get_auth_token()
+    conversations = get_user_conversations(user.id, token=token)
     return jsonify({"conversations": conversations})
 
 @app.route("/api/conversations", methods=["POST"])
@@ -86,9 +93,10 @@ def create_conversation():
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
+    token = get_auth_token()
     data = request.get_json() or {}
-    title = data.get("title", "New Chat").strip()
-    conv_id = create_user_conversation(user.id, title=title)
+    title = str(data.get("title") or "New Chat").strip()
+    conv_id = create_user_conversation(user.id, title=title, token=token)
     if not conv_id:
         return jsonify({"error": "Failed to create conversation"}), 500
     return jsonify({"conversation_id": conv_id, "title": title})
@@ -98,7 +106,8 @@ def delete_conversation(conversation_id):
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    success = delete_user_conversation(conversation_id, user.id)
+    token = get_auth_token()
+    success = delete_user_conversation(conversation_id, user.id, token=token)
     return jsonify({"success": success})
 
 @app.route("/api/conversations/<conversation_id>/messages", methods=["GET"])
@@ -106,7 +115,8 @@ def list_messages(conversation_id):
     user = get_auth_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    messages = get_conversation_messages(conversation_id)
+    token = get_auth_token()
+    messages = get_conversation_messages(conversation_id, token=token)
     return jsonify({"messages": messages})
 
 # --- Main Streaming Chat Endpoint with Supabase RAG ---
@@ -114,23 +124,24 @@ def list_messages(conversation_id):
 @app.route("/api/chat", methods=["POST"])
 def chat():
     user = get_auth_user()
+    token = get_auth_token()
     data = request.get_json() or {}
-    user_message = data.get("message", "").strip()
-    conversation_id = data.get("conversation_id", "").strip()
-    language = data.get("language", "English").strip()
-    pincode = data.get("pincode", "")
-    user_location = data.get("user_location", {})
+    user_message = str(data.get("message") or "").strip()
+    conversation_id = str(data.get("conversation_id") or "").strip()
+    language = str(data.get("language") or "English").strip()
+    pincode = str(data.get("pincode") or "").strip()
+    user_location = data.get("user_location") or {}
 
     if not user_message:
         return jsonify({"error": "Message cannot be empty"}), 400
 
     # Auto-create conversation if not provided
     if user and not conversation_id:
-        conversation_id = create_user_conversation(user.id, title=user_message[:40])
+        conversation_id = create_user_conversation(user.id, title=user_message[:40], token=token)
 
     # Save user message to Supabase
     if conversation_id:
-        save_chat_message(conversation_id, "user", user_message)
+        save_chat_message(conversation_id, "user", user_message, token=token)
 
     # 1. Instant PIN Code Resolution
     pin_matches = re.findall(r'\b[1-9][0-9]{5}\b', user_message)
@@ -150,13 +161,51 @@ def chat():
 * **Postal Circle:** {po.get('Circle', 'N/A')}
 * **Head Office (HO):** {po.get('HeadOffice', 'N/A')}"""
             if conversation_id:
-                save_chat_message(conversation_id, "assistant", pin_response)
+                save_chat_message(conversation_id, "assistant", pin_response, token=token)
             return Response(pin_response, content_type="text/plain; charset=utf-8")
+
+    # 1.1 Official Parcel / Consignment Tracking Resolution
+    msg_l = user_message.lower().strip()
+    is_tracking_query = any(k in msg_l for k in [
+        "track", "tracking", "consignment", "trace", "parcel status",
+        "speed post status", "shipment status", "where is my parcel", "where is my post",
+        "speed post tracking", "registered post tracking", "package status"
+    ])
+    consignment_match = re.search(r'\b([A-Za-z]{2}\d{9}[A-Za-z]{2})\b', user_message)
+
+    if is_tracking_query or consignment_match:
+        if consignment_match:
+            t_num = consignment_match.group(1).upper()
+            tracking_response = f"""### 📦 India Post Consignment Tracking
+
+* **Consignment Number:** `{t_num}`
+* **Official Tracking Portal:** [India Post Consignment Tracking](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx)
+
+**How to Track:**
+1. Visit the official [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx).
+2. Enter your Consignment Number: `{t_num}`.
+3. Solve the security captcha to view live transit milestones and delivery status.
+
+📱 **SMS Tracking:** Send `POST TRACK {t_num}` to **166** or **51969**."""
+        else:
+            tracking_response = f"""### 📦 India Post Consignment Tracking
+
+You can track your Speed Post, Registered Post, or Parcel through official India Post channels:
+
+1. **Official Web Portal:**
+   Visit [India Post Tracking Portal](https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx) and enter your 13-character Consignment Number (e.g. `EK123456789IN`).
+
+2. **SMS Tracking Service:**
+   Send `POST TRACK <Consignment Number>` (e.g., `POST TRACK EK123456789IN`) to **166** or **51969**."""
+
+        if conversation_id:
+            save_chat_message(conversation_id, "assistant", tracking_response)
+        return Response(tracking_response, content_type="text/plain; charset=utf-8")
 
     # 2. Fetch past conversation history from Supabase for multi-turn context
     history_turns = []
     if conversation_id:
-        past_msgs = get_conversation_messages(conversation_id)
+        past_msgs = get_conversation_messages(conversation_id, token=token)
         # Exclude the very last user message that was just saved
         for m in past_msgs[:-1]:
             role = "user" if m.get("role") == "user" else "model"
@@ -210,6 +259,12 @@ CRITICAL LANGUAGE GUIDELINES:
 - Ensure all descriptions, bullet points, numbers, and rules are fully written in that regional language so readers and listeners receive a complete, coherent answer without skipped portions.
 - For official scheme names, include the regional title and common acronym in brackets (for example: ಸುಕನ್ಯಾ ಸಮೃದ್ಧಿ ಯೋಜನೆ - SSA).
 Always provide accurate, official information for Post Office Small Savings Schemes, POSB Banking charges, Mail/Speed Post rates, and Services.
+
+Official India Post Consignment / Parcel Tracking:
+- When a user asks to track a parcel, consignment, Speed Post, registered post, or article:
+  - Direct them to the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx
+  - Mention official SMS tracking: Send 'POST TRACK <Consignment Number>' to 166 or 51969.
+  - Do NOT provide third-party tracking links.
 
 Official India Post Small Savings Rates:
 - Sukanya Samriddhi Account (SSA): 8.2% p.a. (Compounded annually)
@@ -281,15 +336,22 @@ Official India Post Knowledge Base (from Supabase Vector DB):
                         print(f"[-] Streaming error with {m}: {ex2}")
 
         if not stream_success or not full_text.strip():
-            full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
+            tracking_match = re.search(r'\b[A-Za-z]{2}\d{9}[A-Za-z]{2}\b', user_message)
+            if tracking_match:
+                t_num = tracking_match.group(0).upper()
+                full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+            elif any(w in msg_lower for w in ["track", "consignment", "parcel", "speed post"]):
+                full_text = "You can track your parcel on the official India Post tracking portal: https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx"
+            else:
+                full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
             yield full_text
 
         # Save assistant response to Supabase messages table
         if conversation_id:
-            save_chat_message(conversation_id, "assistant", full_text)
+            save_chat_message(conversation_id, "assistant", full_text, token=token)
             # Update title on first turn
             if len(history_turns) == 0:
-                update_conversation_title(conversation_id, user_message[:45])
+                update_conversation_title(conversation_id, user_message[:45], token=token)
 
     return Response(stream_with_context(generate_stream()), content_type="text/plain; charset=utf-8")
 
@@ -655,4 +717,4 @@ Text to translate:
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=True)

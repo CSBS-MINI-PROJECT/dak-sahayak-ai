@@ -289,7 +289,21 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
       <div className="message-bubble">
         {isBot ? (
           <div className="bot-markdown">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ node, ...props }) => (
+                  <a
+                    {...props}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#38bdf8', textDecoration: 'underline', fontWeight: '500' }}
+                  >
+                    {props.children}
+                  </a>
+                )
+              }}
+            >
               {content}
             </ReactMarkdown>
             {isStreaming && <span className="typing-cursor"></span>}
