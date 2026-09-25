@@ -20,6 +20,7 @@ from supabase_client import (
     search_pincode_db
 )
 from vector_search import search_documents
+from tts_service import generate_indian_speech
 from calculator import (
     calculate_speed_post, calculate_ordinary_letter, calculate_postcard,
     calculate_inland_letter, calculate_ordinary_parcel, calculate_registered_post, calculate_insurance,
@@ -57,6 +58,20 @@ def get_auth_user():
     if not token:
         return None
     return get_user_from_token(token)
+
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({
+        "status": "online",
+        "service": "Dak Sahayak AI Backend API",
+        "endpoints": {
+            "health": "/api/health",
+            "chat": "/api/chat",
+            "tts": "/api/tts",
+            "translate": "/api/translate",
+            "calculate": "/api/calculate"
+        }
+    })
 
 @app.route("/api/health", methods=["GET"])
 def health():
@@ -237,9 +252,13 @@ You can track your Speed Post, Registered Post, or Parcel through official India
             res = calculate_mis_payout(amt_val)
             calc_context = f"\n\nCalculation MIS: Deposit ₹{res['deposit_amount']:,.2f} | Monthly Income ₹{res['monthly_payout']:,.2f}"
 
-    system_prompt = f"""You are Dak Sahayak (डाक सहायक), the official India Post AI assistant.
-Respond strictly and fluently in {language}. If the language is a regional Indian language (e.g. Hindi, Kannada, Tamil, Telugu, Marathi, Bengali), generate natural native script text.
-Always provide structured, clear answers for Post Office Small Savings Schemes, POSB Banking charges, Mail/Speed Post rates, and Services.
+    system_prompt = f"""You are Dak Sahayak, the official India Post AI assistant.
+Respond strictly, fluently, and completely in {language}.
+CRITICAL LANGUAGE GUIDELINES:
+- When responding in a regional Indian language (such as Kannada, Hindi, Tamil, Telugu, Marathi, Bengali), write the ENTIRE content in that native script.
+- Ensure all descriptions, bullet points, numbers, and rules are fully written in that regional language so readers and listeners receive a complete, coherent answer without skipped portions.
+- For official scheme names, include the regional title and common acronym in brackets (for example: ಸುಕನ್ಯಾ ಸಮೃದ್ಧಿ ಯೋಜನೆ - SSA).
+Always provide accurate, official information for Post Office Small Savings Schemes, POSB Banking charges, Mail/Speed Post rates, and Services.
 
 Official India Post Consignment / Parcel Tracking:
 - When a user asks to track a parcel, consignment, Speed Post, registered post, or article:
@@ -607,6 +626,94 @@ def api_form_chat_flow():
         "prompt": next_step["prompt"],
         "collected_data": collected
     })
+
+# --- Text-to-Speech (TTS) Endpoint with Indian Neural Accents ---
+
+@app.route("/api/tts", methods=["POST"])
+def text_to_speech():
+    """Synthesizes text into high-quality Indian neural speech audio (MP3)."""
+    try:
+        data = request.get_json() or {}
+        text = data.get("text", "").strip()
+        language = data.get("language", "English")
+        gender = data.get("gender", "female")
+
+        if not text:
+            return jsonify({"error": "No text provided for speech synthesis"}), 400
+
+        audio_bytes = generate_indian_speech(text=text, language=language, gender=gender)
+        if not audio_bytes:
+            return jsonify({"error": "Failed to synthesize speech audio"}), 500
+
+        return Response(
+            audio_bytes,
+            mimetype="audio/mpeg",
+            headers={
+                "Content-Type": "audio/mpeg",
+                "Content-Disposition": "inline; filename=speech.mp3",
+                "Cache-Control": "public, max-age=3600"
+            }
+        )
+    except Exception as e:
+        print(f"[TTS Route Error]: {e}")
+        return jsonify({"error": f"Speech synthesis failed: {str(e)}"}), 500
+
+# --- Translate to English Endpoint ---
+
+@app.route("/api/translate", methods=["POST"])
+def translate_to_english():
+    """Translates non-English text to English using Gemini."""
+    try:
+        data = request.get_json() or {}
+        text = data.get("text", "").strip()
+        source_language = data.get("source_language", "auto")
+
+        if not text:
+            return jsonify({"error": "No text provided for translation"}), 400
+
+        if not client:
+            return jsonify({"error": "AI service unavailable"}), 503
+
+        prompt = f"""Translate the following text to English. 
+Preserve the original formatting including bullet points, numbering, bold markers (**), and markdown structure.
+Do NOT add any extra explanation, commentary, or preamble. Only output the translated text.
+
+Source language: {source_language}
+
+Text to translate:
+{text}"""
+
+        models_to_try = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.5-flash"]
+        translated = ""
+
+        for m in models_to_try:
+            try:
+                response = client.models.generate_content(
+                    model=m,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.2,
+                        max_output_tokens=4096
+                    )
+                )
+                if response.text and response.text.strip():
+                    translated = response.text.strip()
+                    break
+            except Exception as e:
+                print(f"[Translate] Model {m} failed: {e}")
+                continue
+
+        if not translated:
+            return jsonify({"error": "Translation returned empty result"}), 500
+
+        return jsonify({
+            "translated_text": translated,
+            "source_language": source_language
+        })
+
+    except Exception as e:
+        print(f"[Translate Error]: {e}")
+        return jsonify({"error": f"Translation failed: {str(e)}"}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
