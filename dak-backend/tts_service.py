@@ -81,7 +81,7 @@ def _run_async_in_thread(coro):
 
     thread = threading.Thread(target=runner)
     thread.start()
-    thread.join(timeout=60)  # 60 second timeout
+    thread.join(timeout=12)  # 12 second synthesis timeout for responsive degradation
 
     if error[0]:
         raise error[0]
@@ -147,7 +147,9 @@ def generate_indian_speech(text: str, language: str = 'English', gender: str = '
         if voice != INDIAN_VOICE_MAP['English']:
             try:
                 print(f"[TTS] Falling back to English Indian voice...")
-                return _run_async_in_thread(_synthesize_edge_tts(clean_text, INDIAN_VOICE_MAP['English']))
+                fallback_bytes = _run_async_in_thread(_synthesize_edge_tts(clean_text, INDIAN_VOICE_MAP['English']))
+                if fallback_bytes and len(fallback_bytes) > 0:
+                    return fallback_bytes
             except Exception as fallback_err:
                 print(f"[TTS Fallback Error]: {fallback_err}")
-        raise e
+        return b""

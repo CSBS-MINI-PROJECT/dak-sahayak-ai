@@ -1,0 +1,109 @@
+{
+  "version": "2025.1",
+  "effective_date": "2025-01-01",
+  "notes": "Official India Post / Ministry of Finance interest rates and postal tariff schedule",
+  "speed_post_tariff": {
+    "local": {
+      "label": "Local (Intra-city)",
+      "up_to_50g": 15,
+      "up_to_200g": 25,
+      "up_to_500g": 30,
+      "addl_500g": 10
+    },
+    "up_to_200": {
+      "label": "Up to 200 km",
+      "up_to_50g": 35,
+      "up_to_200g": 35,
+      "up_to_500g": 50,
+      "addl_500g": 15
+    },
+    "201_to_1000": {
+      "label": "201 to 1000 km",
+      "up_to_50g": 35,
+      "up_to_200g": 40,
+      "up_to_500g": 60,
+      "addl_500g": 30
+    },
+    "1001_to_2000": {
+      "label": "1001 to 2000 km",
+      "up_to_50g": 35,
+      "up_to_200g": 60,
+      "up_to_500g": 80,
+      "addl_500g": 40
+    },
+    "above_2000": {
+      "label": "Above 2000 km",
+      "up_to_50g": 35,
+      "up_to_200g": 70,
+      "up_to_500g": 90,
+      "addl_500g": 50
+    }
+  },
+  "small_savings_rates": {
+    "sukanya": {
+      "rate": 0.082,
+      "deposit_years": 15,
+      "maturity_years": 21,
+      "min_deposit": 250.0,
+      "max_deposit": 150000.0,
+      "compounding": "Annually"
+    },
+    "scss": {
+      "rate": 0.082,
+      "tenure_years": 5,
+      "min_deposit": 1000.0,
+      "max_deposit": 3000000.0,
+      "payout_frequency": "Quarterly"
+    },
+    "ppf": {
+      "rate": 0.071,
+      "tenure_years": 15,
+      "min_deposit": 500.0,
+      "max_deposit": 150000.0,
+      "compounding": "Annually"
+    },
+    "mis": {
+      "rate": 0.074,
+      "tenure_years": 5,
+      "min_deposit": 1000.0,
+      "max_deposit": 1500000.0,
+      "payout_frequency": "Monthly"
+    },
+    "nsc": {
+      "rate": 0.077,
+      "tenure_years": 5,
+      "min_deposit": 1000.0,
+      "compounding": "Annually"
+    },
+    "kvp": {
+      "rate": 0.075,
+      "tenure_months": 115,
+      "tenure_display": "9 Years 7 Months",
+      "min_deposit": 1000.0
+    },
+    "mssc": {
+      "rate": 0.075,
+      "tenure_years": 2,
+      "min_deposit": 1000.0,
+      "max_deposit": 200000.0,
+      "compounding": "Quarterly"
+    },
+    "potd": {
+      "rates": {
+        "1": 0.069,
+        "2": 0.070,
+        "3": 0.071,
+        "5": 0.075
+      },
+      "compounding": "Quarterly"
+    },
+    "rd": {
+      "rate": 0.067,
+      "tenure_years": 5,
+      "total_installments": 60,
+      "min_deposit": 100.0,
+      "compounding": "Quarterly"
+    }
+  }
+}
+

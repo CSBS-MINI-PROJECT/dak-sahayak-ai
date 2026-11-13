@@ -5,6 +5,33 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { fetchTTSAudio, translateToEnglish } from '../lib/api';
 
+const BCP47_LANG_MAP = {
+  English: 'en-IN',
+  Hindi: 'hi-IN',
+  Kannada: 'kn-IN',
+  Tamil: 'ta-IN',
+  Telugu: 'te-IN',
+  Marathi: 'mr-IN',
+  Bengali: 'bn-IN'
+};
+
+function stripMarkdownForSpeech(text) {
+  if (!text) return '';
+  return text
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    .replace(/#{1,6}\s*/g, '')
+    .replace(/[\*_]{1,3}/g, '')
+    .replace(/^\s*>\s*/gm, '')
+    .replace(/^\s*[\-\*\+]\s+/gm, '')
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/\|[\-\:\s\|]+\|/g, '')
+    .replace(/\|/g, ' ')
+    .trim();
+}
+
 export default function MessageBubble({ role, content, isStreaming = false, language = 'English' }) {
   const [copied, setCopied] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,6 +52,9 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
         audioRef.current.pause();
         audioRef.current = null;
       }
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
       if (audioUrlRef.current) {
         URL.revokeObjectURL(audioUrlRef.current);
       }
@@ -36,6 +66,9 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
+    }
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
     }
     if (audioUrlRef.current) {
       URL.revokeObjectURL(audioUrlRef.current);
@@ -51,12 +84,47 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const playBrowserTTS = (textToSpeak, langName) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+      setIsPlaying(false);
+      setIsLoadingAudio(false);
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      const cleanText = stripMarkdownForSpeech(textToSpeak);
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = BCP47_LANG_MAP[langName] || 'en-IN';
+      utterance.rate = 0.95;
+      utterance.onstart = () => {
+        setIsPlaying(true);
+        setIsLoadingAudio(false);
+      };
+      utterance.onend = () => {
+        setIsPlaying(false);
+      };
+      utterance.onerror = (e) => {
+        console.error('Browser speech synthesis error:', e);
+        setIsPlaying(false);
+        setIsLoadingAudio(false);
+      };
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.error('Failed to start browser speech synthesis:', e);
+      setIsPlaying(false);
+      setIsLoadingAudio(false);
+    }
+  };
+
   const handleToggleSpeech = async () => {
     // Stop if already playing
     if (isPlaying) {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
+      }
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
       }
       setIsPlaying(false);
       return;
@@ -74,7 +142,18 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
       setIsLoadingAudio(true);
 
       // Fetch the audio from backend TTS API
-      const audioUrl = await fetchTTSAudio(content, effectiveLanguage);
+      const ttsResult = await fetchTTSAudio(content, effectiveLanguage);
+      if (ttsResult && ttsResult.fallback === 'browser_tts') {
+        playBrowserTTS(content, effectiveLanguage);
+        return;
+      }
+
+      const audioUrl = ttsResult?.url || (typeof ttsResult === 'string' ? ttsResult : null);
+      if (!audioUrl) {
+        playBrowserTTS(content, effectiveLanguage);
+        return;
+      }
+
       audioUrlRef.current = audioUrl;
 
       const audio = new Audio(audioUrl);
@@ -85,7 +164,7 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
       };
 
       audio.onerror = (e) => {
-        console.error('Audio playback error:', e);
+        console.warn('Audio playback error, falling back to browser speech:', e);
         setIsPlaying(false);
         setIsLoadingAudio(false);
         // Clear broken audio reference
@@ -94,19 +173,14 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
           URL.revokeObjectURL(audioUrlRef.current);
           audioUrlRef.current = null;
         }
+        playBrowserTTS(content, effectiveLanguage);
       };
 
       await audio.play();
       setIsPlaying(true);
     } catch (err) {
-      console.error('TTS speech synthesis error:', err);
-      setIsPlaying(false);
-      // Clear broken references on error
-      audioRef.current = null;
-      if (audioUrlRef.current) {
-        URL.revokeObjectURL(audioUrlRef.current);
-        audioUrlRef.current = null;
-      }
+      console.warn('TTS request failed, falling back to browser speech:', err);
+      playBrowserTTS(content, effectiveLanguage);
     } finally {
       setIsLoadingAudio(false);
     }
@@ -289,6 +363,14 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
       <div className="message-bubble">
         {isBot ? (
           <div className="bot-markdown">
+            {isStreaming && !content && (
+              <div className="thinking-loader">
+                <span className="thinking-dot"></span>
+                <span className="thinking-dot"></span>
+                <span className="thinking-dot"></span>
+                <span className="thinking-text">Thinking...</span>
+              </div>
+            )}
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -306,7 +388,7 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
             >
               {content}
             </ReactMarkdown>
-            {isStreaming && <span className="typing-cursor"></span>}
+            {isStreaming && content && <span className="typing-cursor"></span>}
 
             {/* Translation Display */}
             {showTranslation && translatedText && (

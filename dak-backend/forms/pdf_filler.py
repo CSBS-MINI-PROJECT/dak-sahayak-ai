@@ -4,6 +4,7 @@ PDF Generation & Coordinate Overlay Engine for official India Post Form-1.
 
 import io
 import os
+import json
 from datetime import datetime
 import pypdf
 from reportlab.lib.pagesizes import A4
@@ -11,6 +12,74 @@ from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 
 from .validator import load_scheme_config, validate_form_data
+
+def draw_fitted_text(c, x, y, text, font_name="Helvetica-Bold", font_size=9, max_width=None, max_height=None, allow_wrap=True, min_font_size=6.0):
+    """
+    Renders text at (x, y) with dynamic auto-scaling and intelligent word-wrapping.
+    Guarantees long applicant names, addresses, and numbers never overflow allocated form boxes.
+    """
+    if not text:
+        return
+
+    text_str = str(text).strip()
+    if not max_width:
+        c.setFont(font_name, font_size)
+        c.drawString(x, y, text_str)
+        return
+
+    current_size = float(font_size)
+    c.setFont(font_name, current_size)
+    measured_w = c.stringWidth(text_str, font_name, current_size)
+
+    # 1. Fits comfortably on a single line
+    if measured_w <= max_width:
+        c.drawString(x, y, text_str)
+        return
+
+    # 2. Try single-line auto-scaling down to min_font_size
+    scale_ratio = max_width / max(measured_w, 1.0)
+    scaled_size = current_size * scale_ratio
+    if not allow_wrap or scaled_size >= min_font_size:
+        effective_size = max(min_font_size, scaled_size)
+        c.setFont(font_name, effective_size)
+        c.drawString(x, y, text_str)
+        return
+
+    # 3. Word wrapping at min_font_size for multi-line fields
+    effective_font_size = max(min_font_size, min(current_size, 8.0))
+    c.setFont(font_name, effective_font_size)
+    words = text_str.split()
+    lines = []
+    current_line = []
+
+    for word in words:
+        test_line = " ".join(current_line + [word])
+        if c.stringWidth(test_line, font_name, effective_font_size) <= max_width:
+            current_line.append(word)
+        else:
+            if current_line:
+                lines.append(" ".join(current_line))
+                current_line = [word]
+            else:
+                lines.append(word)
+                current_line = []
+    if current_line:
+        lines.append(" ".join(current_line))
+
+    line_step = effective_font_size * 1.15
+    max_lines = int(max_height / line_step) if max_height else len(lines)
+    if max_lines < len(lines):
+        lines = lines[:max_lines]
+        if lines:
+            last = lines[-1]
+            while c.stringWidth(last + "...", font_name, effective_font_size) > max_width and len(last) > 1:
+                last = last[:-1]
+            lines[-1] = last + "..."
+
+    cur_y = y
+    for line in lines:
+        c.drawString(x, cur_y, line)
+        cur_y -= line_step
 
 def number_to_words_inr(amount):
     """Convert integer / float amount to Indian Currency words."""
@@ -174,13 +243,16 @@ def generate_filled_pdf(scheme="ppf", language="en", raw_data=None):
 
         font_name = item.get("font_name", "Helvetica-Bold")
         font_size = item.get("font_size", 9)
-        c.setFont(font_name, font_size)
-
         max_w = item.get("max_width")
-        if max_w and len(text) > 45:
-            text = text[:60]
+        max_h = item.get("max_height")
+        allow_wrap = item.get("allow_wrap", True if max_w and max_w >= 150 else False)
 
-        c.drawString(item["x"], item["y"], text)
+        draw_fitted_text(
+            c, item["x"], item["y"], text,
+            font_name=font_name, font_size=font_size,
+            max_width=max_w, max_height=max_h,
+            allow_wrap=allow_wrap
+        )
 
     c.showPage()
 
@@ -200,9 +272,16 @@ def generate_filled_pdf(scheme="ppf", language="en", raw_data=None):
 
         font_name = item.get("font_name", "Helvetica-Bold")
         font_size = item.get("font_size", 9)
-        c.setFont(font_name, font_size)
+        max_w = item.get("max_width")
+        max_h = item.get("max_height")
+        allow_wrap = item.get("allow_wrap", True if max_w and max_w >= 150 else False)
 
-        c.drawString(item["x"], item["y"], text)
+        draw_fitted_text(
+            c, item["x"], item["y"], text,
+            font_name=font_name, font_size=font_size,
+            max_width=max_w, max_height=max_h,
+            allow_wrap=allow_wrap
+        )
 
     c.showPage()
     c.save()

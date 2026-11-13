@@ -151,8 +151,14 @@ export async function fetchTTSAudio(text, language = 'English', gender = 'female
     throw new Error(errData.error || `TTS request failed with status ${res.status}`);
   }
 
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    const data = await res.json();
+    return { fallback: data.fallback || 'browser_tts', text, language };
+  }
+
   const blob = await res.blob();
-  return URL.createObjectURL(blob);
+  return { url: URL.createObjectURL(blob) };
 }
 
 export async function translateToEnglish(text, sourceLanguage = 'auto') {
