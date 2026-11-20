@@ -29,6 +29,7 @@ dak-frontend/.env.*.local
 
 # Databases & Vector persistence (Old & Local)
 *.db
+!dak-backend/data/pincodes.db
 *.sqlite
 *.sqlite3
 dak_logs.db

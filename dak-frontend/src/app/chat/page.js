@@ -221,10 +221,6 @@ export default function ChatPage() {
               >
                 <i className="fa-solid fa-bars"></i>
               </button>
-              <div className="chat-model-badge">
-                <i className="fa-solid fa-envelope-open-text"></i>
-                <span>Your official India Post AI assistant</span>
-              </div>
             </div>
 
             <div className="header-right">

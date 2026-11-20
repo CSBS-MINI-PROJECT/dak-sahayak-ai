@@ -34,15 +34,15 @@ def ingest_pincodes():
             if pincode and len(pincode) == 6:
                 rows_to_insert.append({
                     "pincode": pincode,
-                    "office_name": row.get("office_name") or row.get("OfficeName") or row.get("Name") or "",
-                    "office_type": row.get("office_type") or row.get("OfficeType") or "Sub Post Office",
-                    "delivery_status": row.get("delivery_status") or row.get("Delivery") or "Delivery",
-                    "taluk": row.get("taluk") or row.get("Taluk") or "",
-                    "division": row.get("division") or row.get("Division") or "",
-                    "district": row.get("district") or row.get("District") or "",
-                    "region": row.get("region") or row.get("Region") or "Postal Region",
-                    "state": row.get("state") or row.get("State") or "",
-                    "circle": row.get("circle") or row.get("Circle") or "India Post"
+                    "office_name": row.get("OfficeName") or row.get("office_name") or row.get("Name") or "",
+                    "office_type": row.get("OfficeType") or row.get("office_type") or "Sub Post Office",
+                    "delivery_status": row.get("Delivery") or row.get("delivery_status") or "Delivery",
+                    "taluk": row.get("Taluk") or row.get("taluk") or row.get("District") or row.get("district") or "",
+                    "division": row.get("DivisionName") or row.get("division") or "",
+                    "district": row.get("District") or row.get("district") or "",
+                    "region": row.get("RegionName") or row.get("region") or "Postal Region",
+                    "state": row.get("StateName") or row.get("state") or "",
+                    "circle": row.get("CircleName") or row.get("circle") or "India Post"
                 })
 
     print(f"[*] Total valid PIN rows parsed from CSV: {len(rows_to_insert)}")
