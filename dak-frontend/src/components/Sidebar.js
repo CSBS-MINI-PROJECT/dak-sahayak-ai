@@ -11,6 +11,7 @@ export default function Sidebar({
   onNewChat,
   onDeleteConv,
   onOpenModal,
+  onClose,
   userEmail
 }) {
   const router = useRouter();
@@ -23,9 +24,9 @@ export default function Sidebar({
   const avatarLetter = userEmail ? userEmail.charAt(0).toUpperCase() : 'U';
 
   return (
-    <aside className={`sidebar ${!isOpen ? 'closed' : ''}`}>
-      <div className="sidebar-header">
-        <div className="sidebar-brand">
+    <aside className={`sidebar ${!isOpen ? 'closed' : ''} fixed md:relative inset-y-0 left-0 z-50 md:z-auto h-[100dvh] md:h-full max-w-[85vw] md:max-w-none transition-all duration-300 ease-in-out md:flex flex-col ${isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full md:translate-x-0'}`}>
+      <div className="sidebar-header flex items-center justify-between">
+        <div className="sidebar-brand flex items-center gap-3">
           <div className="brand-icon">
             <i className="fa-solid fa-envelope-open-text"></i>
           </div>
@@ -33,6 +34,16 @@ export default function Sidebar({
             Dak <span>Sahayak</span>
           </div>
         </div>
+        {onClose && (
+          <button
+            className="mobile-drawer-close md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={onClose}
+            title="Close sidebar"
+            aria-label="Close sidebar"
+          >
+            <i className="fa-solid fa-xmark text-lg"></i>
+          </button>
+        )}
       </div>
 
       <button className="new-chat-btn" onClick={onNewChat}>

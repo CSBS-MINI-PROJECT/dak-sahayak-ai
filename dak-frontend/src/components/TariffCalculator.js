@@ -66,7 +66,7 @@ export default function TariffCalculator({ isOpen, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '580px' }}>
+      <div className="modal-card w-full max-w-[95vw] md:max-w-xl mx-2 rounded-2xl max-h-[90dvh] overflow-y-auto overflow-x-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>
             <i className="fa-solid fa-calculator" style={{ color: 'var(--accent-red)' }}></i>
@@ -102,7 +102,7 @@ export default function TariffCalculator({ isOpen, onClose }) {
                   Distance calculated automatically
                 </span>
               </label>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2 items-end">
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
                     <i className="fa-solid fa-location-dot" style={{ color: '#4caf50', marginRight: '4px' }}></i>
@@ -126,25 +126,9 @@ export default function TariffCalculator({ isOpen, onClose }) {
                   type="button"
                   onClick={handleSwapPincodes}
                   title="Swap From and To PIN codes"
-                  style={{
-                    alignSelf: 'flex-end',
-                    marginBottom: '4px',
-                    height: '42px',
-                    width: '42px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'var(--card-inner-bg)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    color: 'var(--text-bright)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--accent-red)'}
-                  onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
+                  className="self-center sm:self-end mb-1 h-10 w-10 flex items-center justify-center rounded-lg border border-[var(--border-color)] bg-[var(--card-inner-bg)] hover:border-[var(--accent-red)] transition-colors mx-auto"
                 >
-                  <i className="fa-solid fa-right-left"></i>
+                  <i className="fa-solid fa-right-left rotate-90 sm:rotate-0"></i>
                 </button>
 
                 <div style={{ flex: 1 }}>

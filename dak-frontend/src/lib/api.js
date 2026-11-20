@@ -54,15 +54,33 @@ export async function fetchMessages(conversationId) {
 export async function sendChatMessageStream({ message, conversationId, language, onChunk, onDone, onError }) {
   const authHeader = await getAuthHeader();
   try {
-    const res = await fetch(`${API_BASE}/chat`, {
-      method: 'POST',
-      headers: { ...authHeader, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        conversation_id: conversationId,
-        language
-      })
+    let res;
+    const bodyPayload = JSON.stringify({
+      message,
+      conversation_id: conversationId,
+      language
     });
+    const headers = { ...authHeader, 'Content-Type': 'application/json' };
+
+    try {
+      res = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers,
+        body: bodyPayload
+      });
+    } catch (primaryErr) {
+      // Windows IPv6 ::1 fallback: if localhost:5000 failed, retry directly with 127.0.0.1:5000
+      if (API_BASE.includes('localhost:5000')) {
+        const fallbackUrl = API_BASE.replace('localhost:5000', '127.0.0.1:5000');
+        res = await fetch(`${fallbackUrl}/chat`, {
+          method: 'POST',
+          headers,
+          body: bodyPayload
+        });
+      } else {
+        throw primaryErr;
+      }
+    }
 
     if (!res.ok) {
       throw new Error(`Server returned status ${res.status}`);

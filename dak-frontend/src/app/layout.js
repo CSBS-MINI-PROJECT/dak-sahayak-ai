@@ -1,11 +1,17 @@
 import Script from 'next/script';
 import '../styles/globals.css';
 
+export const viewport = {
+  themeColor: '#d32f2f',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover'
+};
+
 export const metadata = {
   title: 'Dak Sahayak (डाक सहायक) - Official India Post AI Assistant',
   description: 'AI-powered official assistant for India Post postal services, small savings schemes, speed post tariffs, and PIN lookup.',
   manifest: '/manifest.webmanifest',
-  themeColor: '#d32f2f',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

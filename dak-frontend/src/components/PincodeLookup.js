@@ -28,7 +28,7 @@ export default function PincodeLookup({ isOpen, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" style={{ maxWidth: '640px' }} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card w-full max-w-[95vw] md:max-w-2xl mx-2 rounded-2xl max-h-[90dvh] overflow-y-auto overflow-x-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>
             <i className="fa-solid fa-location-dot" style={{ color: 'var(--accent-red)' }}></i>
@@ -65,7 +65,7 @@ export default function PincodeLookup({ isOpen, onClose }) {
           )}
 
           {!loading && results.length > 0 && (
-            <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+            <div className="overflow-x-auto w-full max-w-full block" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', textAlign: 'left' }}>
