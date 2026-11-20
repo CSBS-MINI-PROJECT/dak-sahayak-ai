@@ -51,6 +51,9 @@ export default function ChatPage() {
     try {
       const list = await fetchConversations();
       setConversations(list);
+      // Keep on New Chat screen by default on initial load; older chats remain accessible in sidebar history
+      setActiveConvId(null);
+      setMessages([]);
     } catch (err) {
       console.error('Error loading conversations:', err);
     }
@@ -81,13 +84,8 @@ export default function ChatPage() {
       await deleteConversation(convId);
       setConversations(prev => prev.filter(c => c.id !== convId));
       if (activeConvId === convId) {
-        const remaining = conversations.filter(c => c.id !== convId);
-        if (remaining.length > 0) {
-          selectConversation(remaining[0].id);
-        } else {
-          setActiveConvId(null);
-          setMessages([]);
-        }
+        setActiveConvId(null);
+        setMessages([]);
       }
     } catch (err) {
       console.error('Error deleting conversation:', err);
