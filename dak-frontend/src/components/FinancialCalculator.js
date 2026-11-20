@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { calculateTariff } from '../lib/api';
 
 const SCHEMES = [
-  { id: 'sukanya', name: 'Sukanya Samriddhi (SSA)', rate: '8.2%', defaultAmt: 10000 },
-  { id: 'ppf', name: 'Public Provident Fund (PPF)', rate: '7.1%', defaultAmt: 10000 },
-  { id: 'scss', name: 'Senior Citizen Savings (SCSS)', rate: '8.2%', defaultAmt: 100000 },
-  { id: 'mis', name: 'Monthly Income Scheme (MIS)', rate: '7.4%', defaultAmt: 100000 },
-  { id: 'nsc', name: 'National Savings Cert (NSC)', rate: '7.7%', defaultAmt: 10000 },
-  { id: 'kvp', name: 'Kisan Vikas Patra (KVP)', rate: '7.5%', defaultAmt: 10000 }
+  { id: 'sukanya', name: 'Sukanya Samriddhi (SSA)', rate: '8.2%', defaultAmt: 10000, label: 'Annual Deposit Amount (₹)' },
+  { id: 'ppf', name: 'Public Provident Fund (PPF)', rate: '7.1%', defaultAmt: 10000, label: 'Annual Deposit Amount (₹)' },
+  { id: 'scss', name: 'Senior Citizen Savings (SCSS)', rate: '8.2%', defaultAmt: 100000, label: 'One-time Investment Deposit (₹)' },
+  { id: 'mis', name: 'Monthly Income Scheme (MIS)', rate: '7.4%', defaultAmt: 100000, label: 'One-time Investment Deposit (₹)' },
+  { id: 'nsc', name: 'National Savings Cert (NSC)', rate: '7.7%', defaultAmt: 10000, label: 'One-time Investment Deposit (₹)' },
+  { id: 'kvp', name: 'Kisan Vikas Patra (KVP)', rate: '7.5%', defaultAmt: 10000, label: 'One-time Investment Deposit (₹)' },
+  { id: 'mssc', name: 'Mahila Samman Certificate (MSSC)', rate: '7.5%', defaultAmt: 50000, label: 'Investment Deposit (Max ₹2 Lakh) (₹)' },
+  { id: 'potd', name: 'Time Deposit 5-Yr (POTD)', rate: '7.5%', defaultAmt: 100000, label: 'Fixed Deposit Amount (₹)' },
+  { id: 'rd', name: 'Recurring Deposit (PORD)', rate: '6.7%', defaultAmt: 2000, label: 'Monthly Deposit Amount (₹)' }
 ];
 
 export default function FinancialCalculator({ isOpen, onClose }) {
@@ -28,6 +31,8 @@ export default function FinancialCalculator({ isOpen, onClose }) {
       const payload = { service: scheme };
       if (scheme === 'sukanya' || scheme === 'ppf') {
         payload.annual_deposit = Number(amount);
+      } else if (scheme === 'rd') {
+        payload.monthly_deposit = Number(amount);
       } else {
         payload.deposit_amount = Number(amount);
       }
@@ -40,7 +45,7 @@ export default function FinancialCalculator({ isOpen, onClose }) {
     }
   };
 
-  const selectedSchemeObj = SCHEMES.find(s => s.id === scheme);
+  const selectedSchemeObj = SCHEMES.find(s => s.id === scheme) || SCHEMES[0];
 
   const handleDownloadROI = (format = 'pdf') => {
     if (!result) return;
@@ -55,6 +60,7 @@ export default function FinancialCalculator({ isOpen, onClose }) {
       if (result.interest_earned !== undefined) text += `Total Interest Earned: ₹${result.interest_earned?.toLocaleString('en-IN')}\n`;
       if (result.quarterly_payout !== undefined) text += `Quarterly Pension Payout: ₹${result.quarterly_payout?.toLocaleString('en-IN')}\n`;
       if (result.monthly_payout !== undefined) text += `Monthly Income Payout: ₹${result.monthly_payout?.toLocaleString('en-IN')}\n`;
+      if (result.annual_interest !== undefined) text += `Annual Interest: ₹${result.annual_interest?.toLocaleString('en-IN')}\n`;
       if (result.maturity_value !== undefined) text += `Final Maturity Value: ₹${result.maturity_value?.toLocaleString('en-IN')}\n`;
       text += `\nNote: Rates and calculations are based on official Department of Posts guidelines.`;
 
@@ -122,6 +128,11 @@ export default function FinancialCalculator({ isOpen, onClose }) {
               <td>Monthly Income Payout:</td>
               <td style="color:#2e7d32; font-weight:600;">₹${result.monthly_payout?.toLocaleString('en-IN')} / month</td>
             </tr>` : ''}
+            ${result.annual_interest !== undefined ? `
+            <tr>
+              <td>Annual Interest:</td>
+              <td style="color:#2e7d32; font-weight:600;">₹${result.annual_interest?.toLocaleString('en-IN')} / year</td>
+            </tr>` : ''}
             ${result.maturity_value !== undefined ? `
             <tr style="background:#f1f8e9;">
               <td><strong>Final Maturity Value:</strong></td>
@@ -175,14 +186,12 @@ export default function FinancialCalculator({ isOpen, onClose }) {
             </div>
 
             <div className="form-group">
-              <label>
-                {scheme === 'sukanya' || scheme === 'ppf' ? 'Annual Deposit Amount (₹)' : 'One-time Investment Deposit (₹)'}
-              </label>
+              <label>{selectedSchemeObj.label}</label>
               <input
                 type="number"
-                min="500"
-                max="3000000"
-                step="500"
+                min="100"
+                max={scheme === 'mssc' ? 200000 : scheme === 'ppf' || scheme === 'sukanya' ? 150000 : 3000000}
+                step="100"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
                 className="form-control"
@@ -208,6 +217,13 @@ export default function FinancialCalculator({ isOpen, onClose }) {
               <h4 style={{ color: 'var(--text-bright)', marginBottom: '12px', fontSize: '0.95rem' }}>
                 <i className="fa-solid fa-chart-line" style={{ color: 'var(--accent-gold)' }}></i> Estimated Payout Breakdown
               </h4>
+
+              {result.scheme && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.88rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Scheme:</span>
+                  <strong>{result.scheme}</strong>
+                </div>
+              )}
 
               {result.total_invested !== undefined && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.88rem' }}>
@@ -237,6 +253,20 @@ export default function FinancialCalculator({ isOpen, onClose }) {
                 </div>
               )}
 
+              {result.annual_interest !== undefined && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.88rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Annual Interest:</span>
+                  <strong style={{ color: '#81c784' }}>₹{result.annual_interest?.toLocaleString('en-IN')} / year</strong>
+                </div>
+              )}
+
+              {result.tax_benefit && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.88rem' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Tax Status:</span>
+                  <span style={{ color: '#81c784', fontWeight: 600 }}>{result.tax_benefit}</span>
+                </div>
+              )}
+
               {result.maturity_value !== undefined && (
                 <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '1rem', color: '#81c784', fontWeight: 700 }}>
                   <span>Final Maturity Value:</span>
@@ -260,55 +290,55 @@ export default function FinancialCalculator({ isOpen, onClose }) {
                 {showDownloadMenu && (
                   <div
                     style={{
-                      position: 'absolute',
-                      bottom: '110%',
-                      right: 0,
-                      background: '#1e2022',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      borderRadius: '10px',
-                      overflow: 'hidden',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                      minWidth: '160px',
-                      zIndex: 100,
-                    }}
-                  >
-                    {[
-                      { format: 'pdf', label: 'PDF (Print)', icon: 'fa-file-pdf', color: '#ef5350' },
-                      { format: 'doc', label: 'Word Doc (.doc)', icon: 'fa-file-word', color: '#42a5f5' },
-                      { format: 'txt', label: 'Plain Text (.txt)', icon: 'fa-file-lines', color: '#66bb6a' },
-                    ].map(({ format, label, icon, color }) => (
-                      <button
-                        key={format}
-                        type="button"
-                        onClick={() => handleDownloadROI(format)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          width: '100%',
-                          padding: '10px 14px',
-                          background: 'transparent',
-                          border: 'none',
-                          color: 'var(--text-bright)',
-                          cursor: 'pointer',
-                          fontSize: '0.85rem',
-                          textAlign: 'left',
-                          transition: 'background 0.15s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <i className={`fa-solid ${icon}`} style={{ color, width: '14px' }}></i>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                    position: 'absolute',
+                    bottom: '110%',
+                    right: 0,
+                    background: '#1e2022',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: '10px',
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                    minWidth: '160px',
+                    zIndex: 100,
+                  }}
+                >
+                  {[
+                    { format: 'pdf', label: 'PDF (Print)', icon: 'fa-file-pdf', color: '#ef5350' },
+                    { format: 'doc', label: 'Word Doc (.doc)', icon: 'fa-file-word', color: '#42a5f5' },
+                    { format: 'txt', label: 'Plain Text (.txt)', icon: 'fa-file-lines', color: '#66bb6a' },
+                  ].map(({ format, label, icon, color }) => (
+                    <button
+                      key={format}
+                      type="button"
+                      onClick={() => handleDownloadROI(format)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        width: '100%',
+                        padding: '10px 14px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--text-bright)',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        textAlign: 'left',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <i className={`fa-solid ${icon}`} style={{ color, width: '14px' }}></i>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }

@@ -1,6 +1,64 @@
-Source URL: https://www.indiapost.gov.in (Official Reference)
+Source URL: https://www.indiapost.gov.in/mailproducts/domesticservices/domestictariff (Official Reference)
 
-INDIA POST MAILS, SPEED POST, PARCELS & POSB POSB ADMINISTRATIVE RULES
+OFFICIAL INDIA POST DOMESTIC TARIFF RATES SCHEDULE:
+
+1. Letters:
+- Weight not exceeding 20 grams: Rs. 5/-
+- Every additional 20 grams or fraction thereof: Rs. 5/- (Max weight 2 kg)
+
+2. Letter Cards (Inland Letter):
+- For a letter card: Rs. 2.50/-
+
+3. Postcards:
+- Single Postcard: 50 paise (Rs. 0.50)
+- Reply Postcard: Rs. 1.00
+- Printed Postcard: Rs. 6.00
+- Competition Postcard: Rs. 10.00
+- Meghdoot Postcard: 25 paise (Rs. 0.25)
+
+4. Book Post / Book Packet:
+- First 50 grams or fraction thereof: Rs. 4/-
+- Every additional 50 grams or fraction thereof in excess of 50 grams: Rs. 3/- (Max weight 5 kg)
+- Book Packet containing Printed Books: First 100g = Rs. 1/-, Every additional 100g = Rs. 1/-
+
+5. Periodical Post:
+- Value between (Rs. 1 - Rs. 20): First 100g = Rs. 2/-, Every additional 100g = Rs. 3/-
+- Value between (Rs. 21 - Rs. 50): First 100g = Rs. 4/-, Every additional 100g = Rs. 5/-
+- Value of (Rs. 51 and above): First 100g = Rs. 8/-, Every additional 100g = Rs. 9/-
+
+6. Literature for the Blind:
+- Exempted from postage charges (Completely Free up to 7 kg).
+
+7. Registered Newspapers:
+- Single Copy: Weight up to 50g = 25 paise, 51g to 100g = 50 paise, Every additional 100g = 20 paise
+- Multiple Copies Packet: Weight up to 100g = 50 paise, Every additional 100g = 20 paise
+
+8. Gyan Post:
+- Up to 300 grams: Rs. 20/-
+- 301 to 500 grams: Rs. 25/-
+- 501 to 1000 grams (1 kg): Rs. 30/-
+- Every additional 1000 grams: Rs. 20/- (plus applicable GST)
+
+9. Ordinary Parcel:
+- Weight not exceeding 500 grams: Rs. 19/-
+- Every additional 500 grams or part thereof: Rs. 16/- (Max weight 20 kg registered, 4 kg unregistered)
+
+10. Registered Post:
+- Registration Fee: Rs. 17/- (in addition to postage rate)
+- Acknowledgement Due (AD) card: Rs. 3/-
+
+11. Insurance Fee:
+- Value up to Rs. 200: Rs. 10/-
+- Every additional Rs. 100 or fraction thereof: Rs. 6/-
+
+12. Domestic Speed Post (18% GST Applicable):
+- Local (Intra-city): Up to 50g = Rs. 15, 51-200g = Rs. 25, 201-500g = Rs. 30, Addl 500g = Rs. 10
+- Up to 200 km: Up to 50g = Rs. 35, 51-200g = Rs. 35, 201-500g = Rs. 50, Addl 500g = Rs. 15
+- 201 to 1000 km: Up to 50g = Rs. 35, 51-200g = Rs. 40, 201-500g = Rs. 60, Addl 500g = Rs. 30
+- 1001 to 2000 km: Up to 50g = Rs. 35, 51-200g = Rs. 60, 201-500g = Rs. 80, Addl 500g = Rs. 40
+- Above 2000 km: Up to 50g = Rs. 35, 51-200g = Rs. 70, 201-500g = Rs. 90, Addl 500g = Rs. 50
+
+INDIA POST MAILS, SPEED POST, PARCELS & POSB ADMINISTRATIVE RULES
 
 1. Consignment Tracking & Delivery Services:
 - How to Track: Visit www.indiapost.gov.in, use PostInfo mobile app, or send SMS `POST TRACK <Consignment_Number>` to 166 or 51969. Consignment format: 13 digits (e.g., EU123456789IN or CP123456789IN).

@@ -1,44 +1,78 @@
-Source URL: https://www.indiapost.gov.in/api/documents/file/10000752njsw3lqmx04o5u37nye0a9z40s5j90fhhn0aadt3eolc0ehxx0aarr (Official Reference)
+Source URL: https://www.indiapost.gov.in/Financial/pages/content/post-office-saving-schemes.aspx (Official Reference)
 
+INDIA POST SMALL SAVINGS, INVESTMENT & LIFE INSURANCE SCHEMES OFFICIAL GUIDE
 
-INDIA POST SAVINGS SCHEMES (POST OFFICE SAVINGS BANK - POSB) OFFICIAL GUIDE
+1. Small Savings & Fixed-Term Schemes:
+- Post Office Savings Account (SB):
+  * Interest Rate: 4.0% per annum (calculated on daily balance and credited annually).
+  * Minimum Deposit: ₹500 to open, minimum ongoing balance ₹500.
+  * Account Types: Single, Joint (Up to 3 adults), or Minor through guardian.
+  * Tax Status: Interest tax-free up to ₹10,000 under Section 80TTA.
 
-1. Post Office Savings Account (SB):
-- Minimum Deposit: Rs. 500 to open, minimum balance Rs. 500.
-- Interest Rate: 4.0% per annum, calculated on daily balance and credited annually.
-- Account Type: Single, Joint (Up to 3 adults), or Minor through guardian.
+- Post Office Time Deposit (POTD):
+  * Tenure Options: 1 Year (6.9%), 2 Years (7.0%), 3 Years (7.1%), 5 Years (7.5%).
+  * Compounding: Compounded quarterly and paid annually.
+  * Tax Benefit: 5-Year Time Deposit qualifies for deduction under Section 80C.
 
-2. National Savings Time Deposit Account (TD):
-- Tenure options: 1 Year, 2 Years, 3 Years, 5 Years.
-- Interest Rates: 1-Year (6.9%), 2-Year (7.0%), 3-Year (7.1%), 5-Year (7.5%) compounded quarterly and paid annually.
-- Tax Benefit: 5-Year Time Deposit qualifies for deduction under Section 80C of Income Tax Act.
+- Post Office Recurring Deposit (PORD):
+  * Interest Rate: 6.7% per annum compounded quarterly.
+  * Tenure: 5 Years (60 monthly deposits). Minimum deposit ₹100/month.
+  * Tax Status: Interest is fully taxable.
 
-3. Senior Citizen Savings Scheme (SCSS):
-- Eligible: Individuals aged 60 years and above (or 55-60 years for retired defense personnel/VRS).
-- Interest Rate: 8.2% per annum, payable quarterly (April 1, July 1, Oct 1, Jan 1).
-- Maximum Deposit Limit: Rs. 30 Lakhs. Maturity period: 5 years (extendable by 3 years).
+- National Savings Certificate (NSC VIII Issue):
+  * Interest Rate: 7.7% per annum compounded annually, payable on maturity.
+  * Tenure: 5 Years. Minimum deposit ₹1,000, no upper limit.
+  * Tax Status: Deposit & reinvested interest eligible for Section 80C deduction.
 
-4. Public Provident Fund Account (PPF):
-- Minimum Deposit: Rs. 500 per financial year; Maximum Deposit: Rs. 1,500,000 per financial year.
-- Interest Rate: 7.1% per annum compounded annually.
-- Tax Status: EEE (Exempt-Exempt-Exempt) category under Section 80C.
-- Maturity: 15 financial years (extendable in blocks of 5 years).
+- Kisan Vikas Patra (KVP):
+  * Interest Rate: 7.5% per annum compounded annually.
+  * Tenure: 115 Months (9 Years & 7 Months).
+  * Key Feature: Guaranteed doubling of invested amount.
+  * Tax Status: Taxable interest; no Section 80C deduction.
 
-5. Sukanya Samriddhi Account (SSA):
-- Target Group: Girl child under the age of 10 years (Maximum 2 accounts per family, 3 for triplets/twins).
-- Interest Rate: 8.2% per annum compounded annually.
-- Minimum Annual Deposit: Rs. 250; Maximum: Rs. 1,500,000.
-- Maturity: 21 years from account opening or upon marriage after attaining 18 years.
+2. Regular Income & Long-Term Wealth Schemes:
+- Post Office Monthly Income Scheme (POMIS):
+  * Interest Rate: 7.4% per annum paid monthly into savings account.
+  * Tenure: 5 Years.
+  * Investment Limits: Up to ₹9 Lakh for single accounts, up to ₹15 Lakh for joint accounts.
 
-6. Mahila Samman Savings Certificate (MSSC):
-- Target Group: Women or girl child.
-- Interest Rate: 7.5% per annum compounded quarterly.
-- Tenure: 2 Years. Maximum Limit: Rs. 2 Lakhs.
+- Senior Citizen Savings Scheme (SCSS):
+  * Interest Rate: 8.2% per annum, paid quarterly (April 1, July 1, October 1, January 1).
+  * Tenure: 5 Years (extendable in blocks of 3 years).
+  * Eligibility: Individuals aged 60+ (or 55+ for voluntary retired / defense personnel).
+  * Maximum Investment: ₹30 Lakh. Qualifies for Section 80C deduction.
 
-7. National Savings Certificate (NSC):
-- Interest Rate: 7.7% per annum compounded annually, payable on maturity.
-- Tenure: 5 Years. Minimum deposit: Rs. 1,000. No upper limit.
+- Public Provident Fund (PPF):
+  * Interest Rate: 7.1% per annum compounded annually.
+  * Tenure: 15 Years (extendable in 5-year blocks).
+  * Deposit Limits: Minimum ₹500/year, Maximum ₹1.5 Lakh/year.
+  * Tax Status: EEE (Exempt-Exempt-Exempt) — Tax rebate on deposits under 80C, tax-free interest, and tax-free maturity.
 
-8. Kisan Vikas Patra (KVP):
-- Interest Rate: 7.5% per annum compounded annually.
-- Doubles investment in 115 months (9 years & 7 months).
+3. Dedicated Demographic Schemes:
+- Sukanya Samriddhi Yojana (SSY / SSA):
+  * Interest Rate: 8.2% per annum compounded annually.
+  * Target: Girl child under 10 years of age (max 2 accounts per family).
+  * Tenure: 21 Years from account opening (or upon marriage after attaining 18 years). Deposits made for first 15 years.
+  * Deposit Limits: Minimum ₹250/year, Maximum ₹1.5 Lakh/year.
+  * Tax Status: EEE (Exempt-Exempt-Exempt) under Section 80C.
+
+- Mahila Samman Savings Certificate (MSSC):
+  * Interest Rate: 7.5% per annum compounded quarterly.
+  * Target: Exclusively for women and girls.
+  * Tenure: 2 Years.
+  * Maximum Deposit: ₹2 Lakh (Minimum ₹1,000).
+
+4. Postal Life Insurance & Social Security Schemes:
+- Postal Life Insurance (PLI):
+  * Target: Central/State government employees, defense personnel, PSU/bank employees, and professionals.
+  * Variants: Suraksha (Whole Life), Santosh (Endowment Assurance), Suvidha (Convertible Whole Life), Yugal Suraksha (Joint Life), Sumangal (Anticipated Endowment).
+  * High bonus rates and lowest premium rates in the market.
+
+- Rural Postal Life Insurance (RPLI):
+  * Target: Designed specifically for the rural population across India.
+  * Variants: Gram Suraksha, Gram Santosh, Gram Suvidha, Gram Sumangal, Bal Jeevan Bima (Children plan).
+
+- Social Security Schemes:
+  * Atal Pension Yojana (APY): Guaranteed monthly pension of ₹1,000 to ₹5,000 for unorganized sector (age 18-40).
+  * Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY): ₹2 Lakh life insurance cover at ₹436/year.
+  * Pradhan Mantri Suraksha Bima Yojana (PMSBY): ₹2 Lakh accidental insurance cover at ₹20/year.
