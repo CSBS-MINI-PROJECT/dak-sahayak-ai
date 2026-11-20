@@ -35,6 +35,10 @@ export default function ChatPage() {
 
   // 1. Initial Load: User & Conversations
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+
     supabase.auth.getUser()
       .then(({ data: { user } = {} }) => {
         if (user) {
@@ -46,6 +50,12 @@ export default function ChatPage() {
         console.warn('Error fetching user in chat page:', err);
       });
   }, []);
+
+  const closeMobileSidebar = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
 
   const loadConversations = async () => {
     try {
@@ -60,6 +70,7 @@ export default function ChatPage() {
   };
 
   const selectConversation = async (convId) => {
+    closeMobileSidebar();
     setActiveConvId(convId);
     setStreamingText('');
     setIsStreaming(false);
@@ -73,6 +84,7 @@ export default function ChatPage() {
   };
 
   const handleNewChat = () => {
+    closeMobileSidebar();
     setActiveConvId(null);
     setMessages([]);
     setStreamingText('');
@@ -136,12 +148,18 @@ export default function ChatPage() {
       onError: (err) => {
         setIsStreaming(false);
         setStreamingText('');
+        const rawMsg = err?.message || '';
+        const isFetchError = rawMsg.includes('Failed to fetch') || rawMsg.includes('NetworkError');
+        const content = isFetchError
+          ? '⚠️ Backend Server Unreachable: Could not connect to http://localhost:5000. Please ensure the Python Flask backend is running (`start_backend.bat` or `cd dak-backend && python app.py`).'
+          : `⚠️ Connection error: ${rawMsg || 'Failed to reach AI service'}`;
+
         setMessages(prev => [
           ...prev,
           {
             id: `err-${Date.now()}`,
             role: 'assistant',
-            content: `⚠️ Connection error: ${err.message || 'Failed to reach AI service'}`
+            content
           }
         ]);
       }
@@ -179,6 +197,7 @@ export default function ChatPage() {
   };
 
   const handleOpenModal = (modalName) => {
+    closeMobileSidebar();
     if (modalName === 'location') {
       handleDetectLocation();
     } else {
@@ -188,7 +207,16 @@ export default function ChatPage() {
 
   return (
     <AuthGuard>
-      <div className="app-layout">
+      <div className="app-layout min-h-[100dvh] h-[100dvh] w-full max-w-[100vw] overflow-x-hidden overflow-y-hidden flex flex-col md:flex-row relative">
+        {/* Mobile Drawer Backdrop */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden transition-opacity duration-300"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         <Sidebar
           isOpen={sidebarOpen}
           conversations={conversations}
@@ -197,25 +225,31 @@ export default function ChatPage() {
           onNewChat={handleNewChat}
           onDeleteConv={handleDeleteConv}
           onOpenModal={handleOpenModal}
+          onClose={() => setSidebarOpen(false)}
           userEmail={user?.email}
         />
 
-        <div className="main-chat">
-          <header className="chat-header">
-            <div className="header-left">
+        <div className="main-chat flex-1 flex flex-col min-h-[100dvh] h-[100dvh] w-full max-w-full overflow-x-hidden relative">
+          <header className="chat-header flex items-center justify-between px-3 md:px-6 py-2.5 md:py-3 border-b border-[var(--border-color)] bg-[var(--header-bg)] z-10 shrink-0">
+            <div className="header-left flex items-center gap-3">
               <button
-                className="toggle-sidebar-btn"
+                className="toggle-sidebar-btn flex items-center justify-center p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 title="Toggle Sidebar"
+                aria-label="Toggle Navigation Sidebar"
               >
-                <i className="fa-solid fa-bars"></i>
+                <i className="fa-solid fa-bars text-lg"></i>
               </button>
+              <div className="md:hidden flex items-center gap-2 font-semibold text-sm text-[var(--text-bright)]">
+                <i className="fa-solid fa-envelope-open-text text-[var(--accent-red)]"></i>
+                <span>Dak Sahayak</span>
+              </div>
             </div>
 
-            <div className="header-right">
+            <div className="header-right flex items-center gap-2 md:gap-3">
               <ThemeToggle />
               <select
-                className="lang-select"
+                className="lang-select text-xs md:text-sm"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >

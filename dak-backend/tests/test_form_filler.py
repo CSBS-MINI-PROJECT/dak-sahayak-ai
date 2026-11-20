@@ -5,7 +5,11 @@ Unit and integration tests for India Post Account Opening Form generation.
 import io
 import json
 import unittest
+import sys
+import os
 import pypdf
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from forms.validator import validate_form_data, load_scheme_config
 from forms.pdf_filler import generate_filled_pdf, number_to_words_inr

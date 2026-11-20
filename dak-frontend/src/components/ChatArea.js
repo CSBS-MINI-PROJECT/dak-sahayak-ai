@@ -44,26 +44,26 @@ export default function ChatArea({
   return (
     <div className="message-thread">
       {showWelcome ? (
-        <div className="welcome-hero">
+        <div className="welcome-hero w-full max-w-3xl mx-auto px-4 py-6 flex flex-col items-center text-center">
           <div className="welcome-logo">
             <i className="fa-solid fa-envelope-open-text"></i>
           </div>
-          <h1 className="welcome-title">
+          <h1 className="welcome-title text-2xl md:text-3xl font-bold">
             Namaste, I am <span>Dak Sahayak</span>
           </h1>
-          <p className="welcome-desc">
+          <p className="welcome-desc text-sm md:text-base text-gray-400 max-w-xl">
             Your official India Post AI assistant. Ask about savings schemes, mail tariffs, bank charges, or PIN directory.
           </p>
 
-          <div className="prompt-suggestions">
+          <div className="prompt-suggestions grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mt-6">
             {PROMPT_SUGGESTIONS.map((item, idx) => (
               <div
                 key={idx}
-                className="suggestion-card"
+                className="suggestion-card flex items-start gap-3 p-4 rounded-xl transition-all cursor-pointer w-full text-left"
                 onClick={() => onSelectPrompt(item.query)}
               >
-                <i className={`${item.icon} suggestion-icon`}></i>
-                <div>
+                <i className={`${item.icon} suggestion-icon shrink-0 mt-1`}></i>
+                <div className="flex-1 min-w-0">
                   <div style={{ fontWeight: 600, color: 'var(--text-bright)', marginBottom: '4px' }}>
                     {item.title}
                   </div>

@@ -156,7 +156,7 @@ export default function FinancialCalculator({ isOpen, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card w-full max-w-[95vw] md:max-w-xl mx-2 rounded-2xl max-h-[90dvh] overflow-y-auto overflow-x-hidden" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>
             <i className="fa-solid fa-coins" style={{ color: 'var(--accent-gold)' }}></i>

@@ -405,7 +405,20 @@ export default function MessageBubble({ role, content, isStreaming = false, lang
               </div>
             )}
 
-            {!isStreaming && content && (
+            {!isStreaming && content && content.startsWith('⚠️') && (
+              <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={handleCopy}
+                  className="bubble-action-btn"
+                  title="Copy error message"
+                >
+                  <i className={copied ? 'fa-solid fa-check text-green' : 'fa-regular fa-copy'}></i>
+                  <span>{copied ? 'Copied' : 'Copy Error Details'}</span>
+                </button>
+              </div>
+            )}
+
+            {!isStreaming && content && !content.startsWith('⚠️') && (
               <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {/* TTS Speak / Stop Button */}
                 <button

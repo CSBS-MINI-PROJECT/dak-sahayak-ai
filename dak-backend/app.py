@@ -410,74 +410,90 @@ Official India Post Knowledge Base (from Supabase Vector DB):
         models_to_try = ["gemini-3.1-flash-lite", "gemini-3.1-flash-lite-preview", "gemini-3.5-flash-lite"]
         stream_success = False
 
-        if client:
-            for m in models_to_try:
-                try:
-                    # gemini-3.1-flash-lite supports thinking_budget=0 for instant first-token streaming
-                    is_3_1 = "3.1" in m
-                    gen_config = types.GenerateContentConfig(
-                        system_instruction=system_prompt,
-                        temperature=0.2,
-                        thinking_config=types.ThinkingConfig(thinking_budget=0) if is_3_1 else None
-                    )
-                    chat_session = client.chats.create(
-                        model=m,
-                        history=history_turns,
-                        config=gen_config
-                    )
-                    response_stream = chat_session.send_message_stream(user_message)
-                    for chunk in response_stream:
-                        if chunk and chunk.text:
-                            full_text += chunk.text
-                            yield chunk.text
-                    if full_text.strip():
-                        stream_success = True
-                        break
-                except Exception as ex:
-                    err_msg = str(ex).lower()
-                    print(f"[-] Chat error with {m}: {ex}")
-                    # If model is unavailable (503/404/quota), skip to next candidate immediately
-                    if any(err_code in err_msg for err_code in ["503", "unavailable", "404", "not_found", "quota"]):
-                        continue
+        def get_chunk_safe(chunk):
+            try:
+                if hasattr(chunk, "text") and chunk.text:
+                    return chunk.text
+            except Exception:
+                pass
+            return ""
+
+        try:
+            if client:
+                for m in models_to_try:
                     try:
+                        # gemini-3.1-flash-lite supports thinking_budget=0 for instant first-token streaming
                         is_3_1 = "3.1" in m
                         gen_config = types.GenerateContentConfig(
+                            system_instruction=system_prompt,
                             temperature=0.2,
                             thinking_config=types.ThinkingConfig(thinking_budget=0) if is_3_1 else None
                         )
-                        response_stream = client.models.generate_content_stream(
+                        chat_session = client.chats.create(
                             model=m,
-                            contents=f"System Prompt:\n{system_prompt}\n\nQuestion: {user_message}",
+                            history=history_turns,
                             config=gen_config
                         )
+                        response_stream = chat_session.send_message_stream(user_message)
                         for chunk in response_stream:
-                            if chunk and chunk.text:
-                                full_text += chunk.text
-                                yield chunk.text
+                            c_text = get_chunk_safe(chunk)
+                            if c_text:
+                                full_text += c_text
+                                yield c_text
                         if full_text.strip():
                             stream_success = True
                             break
-                    except Exception as ex2:
-                        print(f"[-] Streaming fallback error with {m}: {ex2}")
-                        continue
+                    except Exception as ex:
+                        err_msg = str(ex).lower()
+                        print(f"[-] Chat error with {m}: {ex}")
+                        # If model is unavailable (503/404/quota), skip to next candidate immediately
+                        if any(err_code in err_msg for err_code in ["503", "unavailable", "404", "not_found", "quota"]):
+                            continue
+                        try:
+                            is_3_1 = "3.1" in m
+                            gen_config = types.GenerateContentConfig(
+                                temperature=0.2,
+                                thinking_config=types.ThinkingConfig(thinking_budget=0) if is_3_1 else None
+                            )
+                            response_stream = client.models.generate_content_stream(
+                                model=m,
+                                contents=f"System Prompt:\n{system_prompt}\n\nQuestion: {user_message}",
+                                config=gen_config
+                            )
+                            for chunk in response_stream:
+                                c_text = get_chunk_safe(chunk)
+                                if c_text:
+                                    full_text += c_text
+                                    yield c_text
+                            if full_text.strip():
+                                stream_success = True
+                                break
+                        except Exception as ex2:
+                            print(f"[-] Streaming fallback error with {m}: {ex2}")
+                            continue
 
-        if not stream_success or not full_text.strip():
-            tracking_match = re.search(r'\b[A-Za-z]{2}\d{9}[A-Za-z]{2}\b', user_message)
-            if tracking_match:
-                t_num = tracking_match.group(0).upper()
-                full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/ (enter your consignment number in the Track 'N Trace section)."
-            elif any(w in msg_lower for w in ["track", "consignment", "parcel", "speed post"]):
-                full_text = "You can track your parcel on the official India Post portal: https://www.indiapost.gov.in/ (use the Track 'N Trace section on the homepage)."
-            else:
-                full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
-            yield full_text
+            if not stream_success or not full_text.strip():
+                tracking_match = re.search(r'\b[A-Za-z]{2}\d{9}[A-Za-z]{2}\b', user_message)
+                if tracking_match:
+                    t_num = tracking_match.group(0).upper()
+                    full_text = f"You can track your consignment **{t_num}** on the official India Post portal: https://www.indiapost.gov.in/ (enter your consignment number in the Track 'N Trace section)."
+                elif any(w in msg_lower for w in ["track", "consignment", "parcel", "speed post"]):
+                    full_text = "You can track your parcel on the official India Post portal: https://www.indiapost.gov.in/ (use the Track 'N Trace section on the homepage)."
+                else:
+                    full_text = "India Post provides comprehensive Small Savings, Mail, and POSB Banking services across India."
+                yield full_text
 
-        # Save assistant response to local/supabase messages table
-        if conversation_id:
-            save_chat_message(conversation_id, "assistant", full_text, token=token)
-            # Update title on first turn
-            if len(history_turns) == 0:
-                update_conversation_title(conversation_id, user_message[:45], token=token)
+            # Save assistant response to local/supabase messages table
+            if conversation_id:
+                save_chat_message(conversation_id, "assistant", full_text, token=token)
+                # Update title on first turn
+                if len(history_turns) == 0:
+                    update_conversation_title(conversation_id, user_message[:45], token=token)
+
+        except Exception as fatal_ex:
+            print(f"[Streaming Fatal Error]: {fatal_ex}")
+            if not full_text.strip():
+                yield "I am Dak Sahayak, your India Post AI assistant. Please try asking your question again."
 
     return Response(stream_with_context(generate_stream()), content_type="text/plain; charset=utf-8")
 
