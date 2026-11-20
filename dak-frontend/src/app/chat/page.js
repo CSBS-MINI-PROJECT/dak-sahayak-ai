@@ -231,7 +231,7 @@ export default function ChatPage() {
 
         <div className="main-chat flex-1 flex flex-col min-h-[100dvh] h-[100dvh] w-full max-w-full overflow-x-hidden relative">
           <header className="chat-header flex items-center justify-between px-3 md:px-6 py-2.5 md:py-3 border-b border-[var(--border-color)] bg-[var(--header-bg)] z-10 shrink-0">
-            <div className="header-left flex items-center gap-3">
+            <div className="header-left flex items-center gap-2 md:gap-3">
               <button
                 className="toggle-sidebar-btn flex items-center justify-center p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -240,16 +240,16 @@ export default function ChatPage() {
               >
                 <i className="fa-solid fa-bars text-lg"></i>
               </button>
-              <div className="md:hidden flex items-center gap-2 font-semibold text-sm text-[var(--text-bright)]">
+              <div className="md:hidden flex items-center gap-2 font-semibold text-sm text-[var(--text-bright)] whitespace-nowrap">
                 <i className="fa-solid fa-envelope-open-text text-[var(--accent-red)]"></i>
-                <span>Dak Sahayak</span>
+                <span className="whitespace-nowrap">Dak Sahayak</span>
               </div>
             </div>
 
             <div className="header-right flex items-center gap-2 md:gap-3">
               <ThemeToggle />
               <select
-                className="lang-select text-xs md:text-sm"
+                className="lang-select px-2 py-1 text-xs md:px-3 md:py-1.5 md:text-sm rounded-lg shrink-0"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
               >
