@@ -51,9 +51,6 @@ export default function ChatPage() {
     try {
       const list = await fetchConversations();
       setConversations(list);
-      if (list.length > 0 && !activeConvId) {
-        selectConversation(list[0].id);
-      }
     } catch (err) {
       console.error('Error loading conversations:', err);
     }
@@ -72,17 +69,11 @@ export default function ChatPage() {
     }
   };
 
-  const handleNewChat = async () => {
-    try {
-      const newConv = await createConversation('New Chat');
-      setConversations(prev => [newConv, ...prev]);
-      setActiveConvId(newConv.conversation_id || newConv.id);
-      setMessages([]);
-      setStreamingText('');
-      setIsStreaming(false);
-    } catch (err) {
-      console.error('Error creating new chat:', err);
-    }
+  const handleNewChat = () => {
+    setActiveConvId(null);
+    setMessages([]);
+    setStreamingText('');
+    setIsStreaming(false);
   };
 
   const handleDeleteConv = async (convId) => {
