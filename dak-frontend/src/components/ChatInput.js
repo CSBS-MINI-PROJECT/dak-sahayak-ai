@@ -151,7 +151,7 @@ export default function ChatInput({ onSend, disabled, language = 'English' }) {
 
   const placeholder = isListening
     ? (isMobile ? '🎙️ Listening... Speak now.' : `🎙️ Listening in ${language} (${SPEECH_LANG_MAP[language] || 'en-IN'})... Speak now.`)
-    : (isMobile ? (MOBILE_PLACEHOLDERS[language] || 'Ask Dak Sahayak...') : (PLACEHOLDERS[language] || PLACEHOLDERS['English']));
+    : (isMobile ? 'Ask Dak Sahayak...' : (PLACEHOLDERS[language] || PLACEHOLDERS['English']));
 
   return (
     <div className="input-section">
@@ -203,7 +203,10 @@ export default function ChatInput({ onSend, disabled, language = 'English' }) {
       )}
 
       <p className="input-disclaimer">
-        Dak Sahayak is your official India Post AI assistant. Answers are grounded in official India Post rules. Supports Voice & Text across 7 Indian languages.
+        <span className="md:hidden">Answers are grounded in official India Post rules.</span>
+        <span className="hidden md:inline">
+          Dak Sahayak is your official India Post AI assistant. Answers are grounded in official India Post rules. Supports Voice & Text across 7 Indian languages.
+        </span>
       </p>
     </div>
   );

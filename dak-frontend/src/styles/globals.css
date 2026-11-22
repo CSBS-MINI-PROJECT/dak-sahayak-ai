@@ -3,11 +3,11 @@
 
 :root,
 [data-theme="dark"] {
-  --bg-primary: #131314;
-  --bg-secondary: #1e1f20;
-  --bg-sidebar: #18191a;
-  --bg-hover: #282a2c;
-  --bg-bubble-user: #2b2c2e;
+  --bg-primary: #111111;
+  --bg-secondary: #1a1a1a;
+  --bg-sidebar: #141414;
+  --bg-hover: #222222;
+  --bg-bubble-user: #262626;
   --bg-bubble-bot: transparent;
   --accent-red: #c4122f;
   --accent-red-hover: #dc143c;
@@ -15,38 +15,38 @@
   --text-main: #e3e3e3;
   --text-muted: #9aa0a6;
   --text-bright: #ffffff;
-  --border-color: #333537;
+  --border-color: #262628;
   --radius-lg: 16px;
   --radius-md: 10px;
   --radius-sm: 6px;
   --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Themed variables */
-  --header-bg: #131314;
-  --form-control-bg: #161718;
-  --card-inner-bg: #161718;
-  --card-inner-border: #333537;
-  --active-conv-bg: #2b2d30;
+  --header-bg: #111111;
+  --form-control-bg: #161616;
+  --card-inner-bg: #161616;
+  --card-inner-border: #262628;
+  --active-conv-bg: #242526;
   --active-conv-color: #ffffff;
-  --table-header-bg: #2b2d30;
-  --code-bg: #232527;
+  --table-header-bg: #242526;
+  --code-bg: #1f2022;
   --code-text: #ff98a5;
   --modal-backdrop: rgba(0, 0, 0, 0.75);
   --modal-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
   --tool-btn-bg: rgba(30, 31, 32, 0.7);
   --tool-btn-border: rgba(255, 255, 255, 0.05);
   --tool-btn-hover-bg: linear-gradient(135deg, rgba(42, 44, 46, 0.85) 0%, rgba(32, 33, 35, 0.85) 100%);
-  --auth-bg: radial-gradient(circle at top, #241417 0%, #131314 60%);
+  --auth-bg: radial-gradient(circle at top, #241417 0%, #111111 60%);
   --input-container-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   --input-container-focus-shadow: 0 8px 28px rgba(196, 18, 47, 0.2);
   --chat-model-badge-bg: rgba(196, 18, 47, 0.12);
   --chat-model-badge-border: rgba(196, 18, 47, 0.3);
   --chat-model-badge-color: #ff8595;
-  --theme-toggle-bg: #202124;
-  --theme-toggle-border: #3c4043;
-  --theme-toggle-btn-active-bg: #303134;
+  --theme-toggle-bg: #1c1d1f;
+  --theme-toggle-border: #2d2e30;
+  --theme-toggle-btn-active-bg: #2b2c2e;
   --theme-toggle-btn-active-color: #ffffff;
-  --theme-toggle-btn-inactive-color: #9aa0a6;
+  --theme-toggle-btn-inactive-color: #888d92;
   --theme-toggle-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
@@ -104,13 +104,26 @@
   padding: 0;
 }
 
+body,
+.app-layout,
+.sidebar,
+.chat-header,
+.input-section,
+.input-container,
+.theme-toggle-container,
+.theme-toggle-btn,
+.lang-select,
+.suggestion-card,
+.message-bubble {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-primary);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 a {
@@ -800,9 +813,15 @@ button {
   transform: rotate(-12deg);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .theme-toggle-container {
+    padding: 2px;
+    gap: 1px;
+    border-radius: 9999px;
+  }
   .theme-toggle-btn {
-    padding: 5px 8px;
+    padding: 4px 7px;
+    border-radius: 9999px;
   }
   .theme-toggle-btn .theme-text {
     display: none;
@@ -841,30 +860,29 @@ button {
     padding: 16px 12px;
   }
   .welcome-hero {
-    gap: 12px;
-    padding: 12px 6px;
+    gap: 14px;
+    padding: 20px 8px;
+    margin: auto 0;
   }
   .welcome-logo {
-    width: 44px;
-    height: 44px;
-    font-size: 1.25rem;
-    border-radius: 14px;
-    margin-bottom: 2px;
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 4px;
+    box-shadow: 0 0 24px rgba(196, 18, 47, 0.55), 0 8px 20px rgba(196, 18, 47, 0.35);
   }
   .welcome-title {
-    font-size: 1.6rem;
+    font-size: 1.65rem;
+    line-height: 1.25;
   }
   .welcome-desc {
     font-size: 0.85rem;
-    line-height: 1.4;
+    line-height: 1.45;
+    max-width: 320px;
   }
   .prompt-suggestions {
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .suggestion-card {
-    padding: 12px 14px;
-    gap: 10px;
+    display: none !important;
   }
 }
 
@@ -878,6 +896,18 @@ button {
   gap: 16px;
   max-width: 650px;
   align-self: center;
+  animation: heroFadeIn 0.3s ease-out;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .welcome-logo {
@@ -1137,25 +1167,35 @@ button {
 
 @media (max-width: 768px) {
   .input-section {
-    padding: 6px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    padding: 6px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, transparent 0%, var(--bg-primary) 30%);
   }
   .input-container {
-    padding: 6px 12px 6px 14px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px !important;
+    padding: 6px 8px 6px 16px;
     gap: 8px;
-    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   }
   .chat-input {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
   }
-  .mic-action-btn, .send-action-btn {
+  .mic-action-btn,
+  .send-action-btn {
     width: 36px;
     height: 36px;
-    font-size: 0.9rem;
+    border-radius: 50%;
+    font-size: 0.88rem;
+    flex-shrink: 0;
   }
   .input-disclaimer {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     margin-top: 4px;
     line-height: 1.3;
+    color: var(--text-muted);
+    text-align: center;
   }
 }
 

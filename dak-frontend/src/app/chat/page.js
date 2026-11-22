@@ -231,7 +231,7 @@ export default function ChatPage() {
 
         <div className="main-chat flex-1 flex flex-col min-h-[100dvh] h-[100dvh] w-full max-w-full overflow-x-hidden relative">
           <header className="chat-header flex items-center justify-between px-3 md:px-6 py-2.5 md:py-3 border-b border-[var(--border-color)] bg-[var(--header-bg)] z-10 shrink-0">
-            <div className="header-left flex items-center gap-2 md:gap-3">
+            <div className="header-left flex items-center gap-2 md:gap-3 shrink-0">
               <button
                 className="toggle-sidebar-btn flex items-center justify-center p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -240,27 +240,32 @@ export default function ChatPage() {
               >
                 <i className="fa-solid fa-bars text-lg"></i>
               </button>
-              <div className="md:hidden flex items-center gap-2 font-semibold text-sm text-[var(--text-bright)] whitespace-nowrap">
-                <i className="fa-solid fa-envelope-open-text text-[var(--accent-red)]"></i>
-                <span className="whitespace-nowrap">Dak Sahayak</span>
+              <div className="md:hidden flex items-center gap-1.5 font-semibold text-sm text-[var(--text-bright)] whitespace-nowrap">
+                <i className="fa-solid fa-envelope-open-text text-[var(--accent-red)] text-base"></i>
+                <span className="whitespace-nowrap font-bold">Dak Sahayak</span>
               </div>
             </div>
 
-            <div className="header-right flex items-center gap-2 md:gap-3">
+            <div className="header-right flex items-center gap-1.5 md:gap-3 shrink-0">
               <ThemeToggle />
-              <select
-                className="lang-select px-2 py-1 text-xs md:px-3 md:py-1.5 md:text-sm rounded-lg shrink-0"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                <option value="English">English</option>
-                <option value="Hindi">हिन्दी (Hindi)</option>
-                <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-                <option value="Tamil">தமிழ் (Tamil)</option>
-                <option value="Telugu">తెలుగు (Telugu)</option>
-                <option value="Marathi">मराठी (Marathi)</option>
-                <option value="Bengali">বাংলা (Bengali)</option>
-              </select>
+              <div className="relative inline-flex items-center shrink-0">
+                <i className="fa-solid fa-globe absolute left-2 md:left-2.5 text-[11px] md:text-xs text-[var(--text-muted)] pointer-events-none z-10"></i>
+                <select
+                  className="lang-select pl-6 pr-5 md:pl-7 md:pr-7 py-1 text-xs md:text-sm rounded-lg shrink-0 appearance-none bg-[var(--bg-secondary)] text-[var(--text-main)] border border-[var(--border-color)] cursor-pointer"
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                  aria-label="Select Language"
+                >
+                  <option value="English">English</option>
+                  <option value="Hindi">हिन्दी (Hindi)</option>
+                  <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+                  <option value="Tamil">தமிழ் (Tamil)</option>
+                  <option value="Telugu">తెలుగు (Telugu)</option>
+                  <option value="Marathi">मराठी (Marathi)</option>
+                  <option value="Bengali">বাংলা (Bengali)</option>
+                </select>
+                <i className="fa-solid fa-chevron-down absolute right-1.5 md:right-2 text-[9px] md:text-[10px] text-[var(--text-muted)] pointer-events-none"></i>
+              </div>
             </div>
           </header>
 
